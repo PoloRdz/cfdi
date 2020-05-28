@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FirmaSAT;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace cfdi.Services
 {
@@ -21,11 +22,44 @@ namespace cfdi.Services
             this.privateKey = privateKey;
         }
 
+        //[DllImport("diFirmaSAT2.dll", CharSet = CharSet.Ansi)]
+        //private static extern int SAT_GetCertAsString(StringBuilder sbOutput, int nOutChars, string szFileName, int nOptions);
+
+        //public string GetCertAsString()
+        //{
+        //    StringBuilder stringBuilder = new StringBuilder(0);
+        //    int num = SAT_GetCertAsString(stringBuilder, 0, certPathName + certName, 0);
+        //    if (num <= 0)
+        //    {
+        //        return string.Empty;
+        //    }
+        //    stringBuilder = new StringBuilder(num);
+        //    SAT_GetCertAsString(stringBuilder, stringBuilder.Capacity, certPathName + certName, 0);
+        //    return stringBuilder.ToString();
+        //}
         public string GetCertAsString()
         {
             return FirmaSAT.Sat.GetCertAsString(certPathName + certName);
         }
 
+        //[DllImport("diFirmaSATNet.dll", CharSet = CharSet.Ansi)]
+        //private static extern string GetCertNumber(string szFileName);
+
+        //[DllImport("diFirmaSAT2.dll", CharSet = CharSet.Ansi)]
+        //private static extern int SAT_GetCertNumber(StringBuilder sbOutput, int nOutChars, string szFileName, int nOptions);
+
+        //public string GetCertNumber()
+        //{
+        //    StringBuilder stringBuilder = new StringBuilder(0);
+        //    int num = SAT_GetCertNumber(stringBuilder, 0, this.certPathName + certName, 0);
+        //    if (num <= 0)
+        //    {
+        //        return string.Empty;
+        //    }
+        //    stringBuilder = new StringBuilder(num);
+        //    SAT_GetCertNumber(stringBuilder, stringBuilder.Capacity, certPathName + certName, 0);
+        //    return stringBuilder.ToString();
+        //}
         public string GetCertNumber()
         {
             return FirmaSAT.Sat.GetCertNumber(certPathName + certName);
@@ -33,11 +67,8 @@ namespace cfdi.Services
 
         public void ValidateCertAndKey() 
         {
-            int validation = Sat.CheckKeyAndCert(certPathName + certKey, privateKey, certPathName + certName);
-            if(validation != 0)
-            {
-                throw new Exception("Error al validad la llave privada con contraseña y certificado digital");
-            }
+            int validation = FirmaSAT.Sat.CheckKeyAndCert(certPathName + certKey, privateKey, certPathName + certName);
+            if(validation != 0) throw new Exception("Error al validar la llave privada con contraseña y certificado digital");
         }
 
         public void validateCertExpDate()
