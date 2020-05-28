@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using cfdi.Models;
+using cfdi.Services;
 
 namespace cfdi.Controllers
 {
@@ -13,22 +15,25 @@ namespace cfdi.Controllers
     {
         // GET: api/cfdi
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok();
         }
 
         // GET: api/cfdi/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //[HttpGet("{id}", Name = "Get")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
         // POST: api/cfdi
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post(CFDi cfdi)
         {
+            XmlBuilderService xmlBuilder = new XmlBuilderService();
+            cfdi.xml = xmlBuilder.buildXml(cfdi);
+            return Ok(cfdi.xml);
         }
 
         // PUT: api/cfdi/5
