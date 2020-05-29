@@ -10,9 +10,12 @@ namespace cfdi.Services
 {
     public class XmlBuilderService {
 
-        public FirmaSatService firmaService;
+        private FirmaSatService firmaService;
+        private double totalRetenciones;
+        private double totalTraslados;
 
-        public string buildXml(CFDi cfdi) {
+        public string buildXml(CFDi cfdi)
+        {
             firmaService = new FirmaSatService("C:/TOMZA.SYS/CERTIFICADOS_ERP/GYP/", "IGP160201NK5.cer", "IGP160201NK5.key", "IGP160201NK5");
 
             XmlDocument xml = new XmlDocument();
@@ -20,13 +23,13 @@ namespace cfdi.Services
             XmlElement nodeComprobante = (XmlElement)xml.AppendChild(xml.CreateElement("Comprobante"));
             nodeComprobante.SetAttribute("Version", "3.3");
             nodeComprobante.SetAttribute("Serie", "NG");
-            nodeComprobante.SetAttribute("Folio", "3007");
-            nodeComprobante.SetAttribute("Fecha", "2019-01-28T15:02:00");
-            nodeComprobante.SetAttribute("FormaPago", "99");
-            nodeComprobante.SetAttribute("NoCertificado", firmaService.GetCertNumber());
-            nodeComprobante.SetAttribute("Certificado", firmaService.GetCertAsString());
-            nodeComprobante.SetAttribute("CondicionesDePago", "CREDITO");
-            nodeComprobante.SetAttribute("SubTotal", "55591.02");
+            nodeComprobante.SetAttribute("Folio", "3007"); // TODO: generar 
+            nodeComprobante.SetAttribute("Fecha", cfdi.fecha.ToString());
+            nodeComprobante.SetAttribute("FormaPago", "99"); // TODO: pendiente
+            nodeComprobante.SetAttribute("NoCertificado", this.firmaService.GetCertNumber());
+            nodeComprobante.SetAttribute("Certificado", this.firmaService.GetCertAsString());
+            nodeComprobante.SetAttribute("CondicionesDePago", "CREDITO"); // TODO: pendiente
+            nodeComprobante.SetAttribute("SubTotal", cfdi.subtotal.ToString());
             nodeComprobante.SetAttribute("Total", "64485.58");
             nodeComprobante.SetAttribute("MetodoPago", "PUE");
             nodeComprobante.SetAttribute("TipoDeComprobante", "E");
@@ -51,15 +54,73 @@ namespace cfdi.Services
                 XmlElement nodeConcepto = (XmlElement)nodeConceptos.AppendChild(xml.CreateElement("Concepto"));
                 nodeConcepto.SetAttribute("ClaveProdServ", concepto.claveProdServ);
                 nodeConcepto.SetAttribute("NoIdentificacion", concepto.noIdentificacion);
-                nodeConcepto.SetAttribute("Cantidad", concepto.cantidad);
+                nodeConcepto.SetAttribute("Cantidad", concepto.cantidad.ToString("F6"));
                 nodeConcepto.SetAttribute("ClaveUnidad", concepto.claveUnidad);
                 nodeConcepto.SetAttribute("Unidad", concepto.unidad);
                 nodeConcepto.SetAttribute("Descripcion", concepto.descripcion);
-                nodeConcepto.SetAttribute("ValorUnitario", concepto.valorUnitario);
-                nodeConcepto.SetAttribute("Importe", concepto.importe);
-
+                nodeConcepto.SetAttribute("ValorUnitario", concepto.valorUnitario.ToString("F6"));
+                nodeConcepto.SetAttribute("Importe", concepto.importe.ToString(""));
+                if (concepto.impuestos != null && concepto.impuestos.Length > 0)
+                {
+                    XmlElement nodeConceptoImpuestos = (XmlElement)nodeConcepto.AppendChild(xml.CreateElement("Impuestos"));
+                    foreach(Impuesto impuesto in concepto.impuestos)
+                    {
+                        string tipoImpuesto = impuesto.tipo == "TRA" ? "Traslados" : "Retenciones";
+                        string descripcionImpuesto = impuesto.tipo == "TRA" ? "Traslado" : "Retencion";
+                        XmlElement nodeTipoImpuesto = (XmlElement)nodeConceptoImpuestos.AppendChild(xml.CreateElement(tipoImpuesto));
+                        XmlElement nodeDescripcionImpuesto = (XmlElement)nodeTipoImpuesto.AppendChild(xml.CreateElement(descripcionImpuesto));
+                        setTaxesAttributes(nodeDescripcionImpuesto, impuesto);
+                    }                    
+                }                
             }
+            XmlElement nodeImpuestos = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Impuestos"));
+            calculateTotalTaxes(cfdi.conceptos, nodeImpuestos, xml);
+            if (this.totalRetenciones > 0.0D)
+                nodeImpuestos.SetAttribute("TotalImpuestosRetenidos", this.totalRetenciones.ToString());
+            if (this.totalTraslados > 0.0D)
+                nodeImpuestos.SetAttribute("TotalImpuestosTrasladados", this.totalTraslados.ToString());
+
             return xml.OuterXml;
+        }
+
+        private void setTaxesAttributes(XmlElement node, Impuesto impuesto, bool addBase = true)
+        {
+            if(addBase)
+                node.SetAttribute("Base", impuesto.precioBase.ToString("F6"));
+            node.SetAttribute("Impuesto", impuesto.impuesto);
+            node.SetAttribute("TipoFactor", impuesto.tipoFactor);
+            node.SetAttribute("TasaOCuota", impuesto.tasaOCuota.ToString("F6"));
+            node.SetAttribute("Importe", impuesto.importe.ToString());
+        }
+
+        private void calculateTotalTaxes(Concepto[] conceptos, XmlElement nodeImpuestos, XmlDocument xml)
+        {
+            this.totalRetenciones = 0.0D;
+            this.totalTraslados = 0.0D;
+            XmlElement nodeTraslados = null;
+            XmlElement nodeRetenciones = null;
+            foreach(Concepto concepto in conceptos)
+            {
+                foreach(Impuesto impuesto in concepto.impuestos)
+                {
+                    if (impuesto.tipo == "TRA")
+                    {
+                        this.totalTraslados += impuesto.importe;
+                        if (nodeTraslados == null)
+                            nodeTraslados = (XmlElement)nodeImpuestos.AppendChild(xml.CreateElement("Traslados"));
+                        XmlElement nodeImpuesto = (XmlElement)nodeTraslados.AppendChild(xml.CreateElement("Traslado"));
+                        setTaxesAttributes(nodeImpuesto, impuesto, false);
+                    }                        
+                    if (impuesto.tipo == "RET")
+                    {
+                        this.totalRetenciones += impuesto.importe;
+                        if (nodeRetenciones == null)
+                            nodeRetenciones = (XmlElement)nodeImpuestos.AppendChild(xml.CreateElement("Retenciones"));
+                        XmlElement nodeRetencion = (XmlElement)nodeRetenciones.AppendChild(xml.CreateElement("Retencion"));
+                        setTaxesAttributes(nodeRetencion, impuesto, false);
+                    }                        
+                }                
+            }
         }
     }
 }

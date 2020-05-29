@@ -16,7 +16,6 @@ namespace cfdi.Models
         public double valorUnitario { get; set; } // requerido
         public double importe { get; set; } // requerido
         public double descuento { get; set; } // opcional
-
-
+        public Impuesto[] impuestos { get; set; }
     }
 }
