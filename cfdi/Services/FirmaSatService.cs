@@ -22,44 +22,11 @@ namespace cfdi.Services
             this.privateKey = privateKey;
         }
 
-        //[DllImport("diFirmaSAT2.dll", CharSet = CharSet.Ansi)]
-        //private static extern int SAT_GetCertAsString(StringBuilder sbOutput, int nOutChars, string szFileName, int nOptions);
-
-        //public string GetCertAsString()
-        //{
-        //    StringBuilder stringBuilder = new StringBuilder(0);
-        //    int num = SAT_GetCertAsString(stringBuilder, 0, certPathName + certName, 0);
-        //    if (num <= 0)
-        //    {
-        //        return string.Empty;
-        //    }
-        //    stringBuilder = new StringBuilder(num);
-        //    SAT_GetCertAsString(stringBuilder, stringBuilder.Capacity, certPathName + certName, 0);
-        //    return stringBuilder.ToString();
-        //}
         public string GetCertAsString()
         {
             return FirmaSAT.Sat.GetCertAsString(certPathName + certName);
         }
 
-        //[DllImport("diFirmaSATNet.dll", CharSet = CharSet.Ansi)]
-        //private static extern string GetCertNumber(string szFileName);
-
-        //[DllImport("diFirmaSAT2.dll", CharSet = CharSet.Ansi)]
-        //private static extern int SAT_GetCertNumber(StringBuilder sbOutput, int nOutChars, string szFileName, int nOptions);
-
-        //public string GetCertNumber()
-        //{
-        //    StringBuilder stringBuilder = new StringBuilder(0);
-        //    int num = SAT_GetCertNumber(stringBuilder, 0, this.certPathName + certName, 0);
-        //    if (num <= 0)
-        //    {
-        //        return string.Empty;
-        //    }
-        //    stringBuilder = new StringBuilder(num);
-        //    SAT_GetCertNumber(stringBuilder, stringBuilder.Capacity, certPathName + certName, 0);
-        //    return stringBuilder.ToString();
-        //}
         public string GetCertNumber()
         {
             return FirmaSAT.Sat.GetCertNumber(certPathName + certName);

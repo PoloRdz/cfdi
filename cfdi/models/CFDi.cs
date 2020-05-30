@@ -8,6 +8,10 @@ namespace cfdi.Models
     public class CFDi
     {
         public int idSucursal { get; set; }
+        public string cert { get; set; }
+        public string rutaCert { get; set; }
+        public string key { get; set; }
+        public string contrasena { get; set; }
         public string sucursal { get; set; }
         public string rfcSucursal { get; set; }
         public string nombreReceptor { get; set; }

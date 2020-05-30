@@ -14,9 +14,9 @@ namespace cfdi.Services
         private double totalRetenciones;
         private double totalTraslados;
 
-        public string buildXml(CFDi cfdi)
+        public string BuildXml(CFDi cfdi)
         {
-            firmaService = new FirmaSatService("C:/TOMZA.SYS/CERTIFICADOS_ERP/GYP/", "IGP160201NK5.cer", "IGP160201NK5.key", "IGP160201NK5");
+            firmaService = new FirmaSatService(cfdi.rutaCert + "\\", cfdi.cert, cfdi.key, cfdi.contrasena);
 
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
@@ -30,7 +30,7 @@ namespace cfdi.Services
             nodeComprobante.SetAttribute("Certificado", this.firmaService.GetCertAsString());
             nodeComprobante.SetAttribute("CondicionesDePago", "CREDITO"); // TODO: pendiente
             nodeComprobante.SetAttribute("SubTotal", cfdi.subtotal.ToString());
-            nodeComprobante.SetAttribute("Total", "64485.58");
+            nodeComprobante.SetAttribute("Total", cfdi.total.ToString());
             nodeComprobante.SetAttribute("MetodoPago", "PUE");
             nodeComprobante.SetAttribute("TipoDeComprobante", "E");
             nodeComprobante.SetAttribute("TipoCambio", "1");

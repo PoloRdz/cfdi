@@ -31,9 +31,17 @@ namespace cfdi.Controllers
         [HttpPost]
         public IActionResult Post(CFDi cfdi)
         {
-            XmlBuilderService xmlBuilder = new XmlBuilderService();
-            cfdi.xml = xmlBuilder.buildXml(cfdi);
-            return Ok(cfdi.xml);
+            try
+            {
+                TimbradoService timService = new TimbradoService();
+                timService.Timbrar(cfdi);
+                return Ok(cfdi.xml);
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
+            
         }
 
         // PUT: api/cfdi/5
