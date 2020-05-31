@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using cfdi.Models;
 using cfdi.Services;
+using cfdi.Exceptions;
 
 namespace cfdi.Controllers
 {
@@ -37,9 +38,13 @@ namespace cfdi.Controllers
                 timService.Timbrar(cfdi);
                 return Ok(cfdi.xml);
             }
-            catch(Exception e)
+            catch(InvalidRFCException e)
             {
                 return NotFound(e.Message);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
             
         }

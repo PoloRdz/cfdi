@@ -16,8 +16,14 @@ namespace cfdi.Services
 
         public string BuildXml(CFDi cfdi)
         {
-            firmaService = new FirmaSatService(cfdi.rutaCert + "\\", cfdi.cert, cfdi.key, cfdi.contrasena);
-
+            firmaService = new FirmaSatService(
+                cfdi.emisor.certificado.rutaCert + "\\", 
+                cfdi.emisor.certificado.cert, 
+                cfdi.emisor.certificado.key, 
+                cfdi.emisor.certificado.contrasena
+            );
+            firmaService.ValidateCertAndKey();
+            firmaService.validateCertExpDate(); //TODO: Falta implementar funcionalidad de validateCertExpDate()
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
             XmlElement nodeComprobante = (XmlElement)xml.AppendChild(xml.CreateElement("Comprobante"));
@@ -41,12 +47,12 @@ namespace cfdi.Services
             XmlElement nodeRelacionado = (XmlElement)nodeRelacionados.AppendChild(xml.CreateElement("CfdiRelacionado"));
             nodeRelacionado.SetAttribute("UUID", "9f482db5-d2e6-434d-80c1-bae44ab0ae0f");
             XmlElement nodeEmisor = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Emisor"));
-            nodeEmisor.SetAttribute("Rfc", cfdi.rfcSucursal);
-            nodeEmisor.SetAttribute("Nombre", cfdi.sucursal);
+            nodeEmisor.SetAttribute("Rfc", cfdi.emisor.rfcSucursal);
+            nodeEmisor.SetAttribute("Nombre", cfdi.emisor.sucursal);
             nodeEmisor.SetAttribute("RegimenFiscal", "601");
             XmlElement nodeReceptor = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Receptor"));
-            nodeReceptor.SetAttribute("Rfc", cfdi.rfcReceptor);
-            nodeReceptor.SetAttribute("Nombre", cfdi.nombreReceptor);
+            nodeReceptor.SetAttribute("Rfc", cfdi.receptor.rfcReceptor);
+            nodeReceptor.SetAttribute("Nombre", cfdi.receptor.nombreReceptor);
             nodeReceptor.SetAttribute("UsoCFDI", "G01");
             XmlElement nodeConceptos = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Conceptos"));
             foreach (Concepto concepto in cfdi.conceptos)

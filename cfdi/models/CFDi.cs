@@ -1,4 +1,5 @@
-﻿using System;
+﻿using cfdi.models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,16 +7,9 @@ using System.Threading.Tasks;
 namespace cfdi.Models
 {
     public class CFDi
-    {
-        public int idSucursal { get; set; }
-        public string cert { get; set; }
-        public string rutaCert { get; set; }
-        public string key { get; set; }
-        public string contrasena { get; set; }
-        public string sucursal { get; set; }
-        public string rfcSucursal { get; set; }
-        public string nombreReceptor { get; set; }
-        public string rfcReceptor { get; set; }
+    { 
+        public Emisor emisor { get; set; }
+        public Receptor receptor { get; set; }
         public string usoCFDi { get; set; }
         public int idFolio { get; set; }
         public int idMov { get; set; }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Text;
+using cfdi.Exceptions;
 
 namespace cfdi.Services
 {
@@ -35,12 +36,12 @@ namespace cfdi.Services
         public void ValidateCertAndKey() 
         {
             int validation = FirmaSAT.Sat.CheckKeyAndCert(certPathName + certKey, privateKey, certPathName + certName);
-            if(validation != 0) throw new Exception("Error al validar la llave privada con contraseña y certificado digital");
+            if(validation != 0) throw new InvalidCertificateKeyException("Error al validar la llave privada con contraseña del certificado digital");
         }
 
         public void validateCertExpDate()
         {
-            
+            //Validar fecha de expiracion del certificado y arrojar ExpiredCertificateException si ha expirado
         }
     }
 }
