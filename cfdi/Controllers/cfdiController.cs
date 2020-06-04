@@ -36,15 +36,26 @@ namespace cfdi.Controllers
             {
                 TimbradoService timService = new TimbradoService();
                 timService.Timbrar(cfdi);
-                return Ok(cfdi.xml);
+                return Ok(cfdi);
             }
             catch(InvalidRFCException e)
             {
                 return NotFound(e.Message);
             }
-            catch(Exception e)
+            catch(CertificateException e)
+            {
+                return Conflict(e.Message);
+            }
+            catch(InvalidCfdiDataException e)
             {
                 return BadRequest(e.Message);
+            }
+            catch(Exception e)
+            {
+                //Log error
+                //return BadRequest("Un error inesperado ha sucedido, intentalo mas tarde");
+                Console.Write(e);
+                return BadRequest(e);
             }
             
         }

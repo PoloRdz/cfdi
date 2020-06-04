@@ -10,6 +10,7 @@ namespace cfdi.models
         public int idSucursal { get; set; }
         public string sucursal { get; set; }
         public string rfcSucursal { get; set; }
+        public string regimenFiscal { get; set; }
         public Certificado certificado { get; set; }
     }
 }

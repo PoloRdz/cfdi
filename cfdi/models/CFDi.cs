@@ -10,6 +10,7 @@ namespace cfdi.Models
     { 
         public Emisor emisor { get; set; }
         public Receptor receptor { get; set; }
+        public CFDiRelacionado relacion { get; set; }
         public string usoCFDi { get; set; }
         public int idFolio { get; set; }
         public int idMov { get; set; }
@@ -24,6 +25,12 @@ namespace cfdi.Models
         public double totalImp { get; set; }
         public double total { get; set; }
         public string mPago { get; set; }
+        public string formaPago { get; set; }
+        public string moneda { get; set; }
+        public string NoCertificadoSat { get; set; }
+        public string NoCertificadoEmisor { get; set; }
+        public string selloSat { get; set; }
+        public string selloEmisor { get; set; }
         public string folioFiscal { get; set; }
         public DateTime fechaCert { get; set; }
         public string xml { get; set; }

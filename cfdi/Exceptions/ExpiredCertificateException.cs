@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace cfdi.Exceptions
 {
-    public class ExpiredCertificateException : Exception
+    public class ExpiredCertificateException : CertificateException
     {
         public ExpiredCertificateException() { }
         public ExpiredCertificateException(string message) : base(message) { }

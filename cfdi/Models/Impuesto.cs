@@ -7,6 +7,7 @@ namespace cfdi.Models
 {
     public class Impuesto
     {
+        public int idImpuesto { get; set; }
         public string tipo { get; set; }
         public double precioBase { get; set; }
         public string impuesto { get; set; }

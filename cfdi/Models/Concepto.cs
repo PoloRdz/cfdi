@@ -7,6 +7,7 @@ namespace cfdi.Models
 {
     public class Concepto
     {
+        public int idConcepto { get; set; }
         public string claveProdServ { get; set; } // requerido
         public string noIdentificacion { get; set; } // opcional
         public double cantidad { get; set; } // requerido

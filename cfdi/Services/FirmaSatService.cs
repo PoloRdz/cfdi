@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -41,7 +42,18 @@ namespace cfdi.Services
 
         public void validateCertExpDate()
         {
-            //Validar fecha de expiracion del certificado y arrojar ExpiredCertificateException si ha expirado
+            var now = DateTime.Now;
+            var expCert = DateTime.Parse(FirmaSAT.Sat.GetCertExpiry(certPathName + certName));
+            if (DateTime.Compare(expCert, now) < 0)
+                throw new ExpiredCertificateException("El certificado ha expirado");
+        }
+
+        public void ValidateCertAndKeyExistence()
+        {
+            if (!File.Exists(certPathName + certKey) && !File.Exists(certPathName + certName))
+            {
+                throw new FileNotFoundException("El certificado o llave que intenta acceder no existe");
+            }
         }
     }
 }

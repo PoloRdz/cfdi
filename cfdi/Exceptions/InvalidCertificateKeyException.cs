@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace cfdi.Exceptions
 {
-    public class InvalidCertificateKeyException : Exception
+    public class InvalidCertificateKeyException : CertificateException
     {
         public InvalidCertificateKeyException() { }
         public InvalidCertificateKeyException(string message) : base(message) { }

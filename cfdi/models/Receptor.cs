@@ -9,5 +9,6 @@ namespace cfdi.models
     {
         public string nombreReceptor { get; set; }
         public string rfcReceptor { get; set; }
+        public string email { get; set; }
     }
 }
