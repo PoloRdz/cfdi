@@ -50,6 +50,10 @@ namespace cfdi.Controllers
             {
                 return BadRequest(e.Message);
             }
+            catch(InvoiceNumberAvailabilityException e)
+            {
+                return BadRequest(e.Message);
+            }
             catch(Exception e)
             {
                 //Log error

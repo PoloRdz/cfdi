@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,12 +31,15 @@ namespace cfdi.Services
                 CfdiXmlBuilder xmlBuilder = new CfdiXmlBuilder();
                 cfdi.xml = xmlBuilder.BuildXml(cfdi);
                 //timbrar xml
-                xmlBuilder.obtenerDatosTimbre(cfdi);
+                //Descomentar 
+                //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
+                Stream xmlStream = StreamBuilder.getStreamFromString(cfdi.xml);
                 cfdi.xml = null;
-                Thread mailSendThread = new Thread(delegate ()
+                Thread mailSendThread = new Thread(
+                    delegate ()
                     {
-                        MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email });
+                        MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream /*, agregarPdf*/);
                     }
                 );
                 mailSendThread.Start();

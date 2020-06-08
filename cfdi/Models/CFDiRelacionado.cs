@@ -7,6 +7,7 @@ namespace cfdi.Models
 {
     public class CFDiRelacionado
     {
+        public int idRelacion { get; set; }
         public string tipoRelacion { get; set; }
         public string UUID { get; set; }
     }

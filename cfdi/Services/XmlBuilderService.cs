@@ -43,12 +43,15 @@ namespace cfdi.Services
             nodeComprobante.SetAttribute("Moneda", cfdi.moneda);
             nodeComprobante.SetAttribute("Sello", "xxx");
             // if tiene relacionados
-            if (cfdi.relacion != null && cfdi.relacion.UUID != null && cfdi.relacion.UUID.Length > 0)
+            if (cfdi.relaciones != null && cfdi.relaciones.Length > 0)
             {
-                XmlElement nodeRelacionados = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("CfdiRelacionados"));
-                nodeRelacionados.SetAttribute("TipoRelacion", cfdi.relacion.tipoRelacion);
-                XmlElement nodeRelacionado = (XmlElement)nodeRelacionados.AppendChild(xml.CreateElement("CfdiRelacionado"));
-                nodeRelacionado.SetAttribute("UUID", cfdi.relacion.UUID);
+                foreach(CFDiRelacionado relacion in cfdi.relaciones)
+                {
+                    XmlElement nodeRelacionados = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("CfdiRelacionados"));
+                    nodeRelacionados.SetAttribute("TipoRelacion", relacion.tipoRelacion);
+                    XmlElement nodeRelacionado = (XmlElement)nodeRelacionados.AppendChild(xml.CreateElement("CfdiRelacionado"));
+                    nodeRelacionado.SetAttribute("UUID", relacion.UUID);
+                }
             }
             XmlElement nodeEmisor = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Emisor"));
             nodeEmisor.SetAttribute("Rfc", cfdi.emisor.rfcSucursal);

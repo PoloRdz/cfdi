@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace cfdi.Models
 {
     public class CFDi
-    { 
+    {
         public Emisor emisor { get; set; }
         public Receptor receptor { get; set; }
-        public CFDiRelacionado relacion { get; set; }
+        public CFDiRelacionado[] relaciones { get; set; }
         public string usoCFDi { get; set; }
         public int idFolio { get; set; }
         public int idMov { get; set; }
@@ -27,6 +27,7 @@ namespace cfdi.Models
         public string mPago { get; set; }
         public string formaPago { get; set; }
         public string moneda { get; set; }
+        public string RfcProvCertif { get; set; }
         public string NoCertificadoSat { get; set; }
         public string NoCertificadoEmisor { get; set; }
         public string selloSat { get; set; }
