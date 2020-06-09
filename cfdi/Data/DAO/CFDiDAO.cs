@@ -41,7 +41,7 @@ namespace cfdi.Data.DAO
             command.Parameters.AddWithValue("@PP_SUBTOTAL_IVA", 0.0);
             command.Parameters.AddWithValue("@PP_TOTAL_IVA", cfdi.totalImp);
             command.Parameters.AddWithValue("@PP_TOTAL", cfdi.total);
-            command.Parameters.AddWithValue("@PP_IMPORTE_LETRA", "");
+            command.Parameters.AddWithValue("@PP_IMPORTE_LETRA", cfdi.importeLetra);
             command.Parameters.AddWithValue("@PP_CADENA_CERTIFICADO_SAT", cfdi.selloSat == null ? "" : cfdi.selloSat);
             command.Parameters.AddWithValue("@PP_SELLO_DIGITAL_EMISOR", cfdi.selloEmisor == null ? "" : cfdi.selloEmisor);
             command.Parameters.AddWithValue("@PP_RFC_PROV_CERTIF", cfdi.RfcProvCertif == null ? "" : cfdi.RfcProvCertif);

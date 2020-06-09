@@ -24,9 +24,10 @@ namespace cfdi.Services
             CFDiDAO cfdiDAO = new CFDiDAO();
             cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.rfcSucursal);
             cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.rfcSucursal);
+            cfdi.importeLetra = ConvertidorImporte.enletras(cfdi.total);
             cfdi.fechaCert = DateTime.Now;
             cfdiDAO.saveCFDI(cfdi, true);
-            if(cfdi.folio > 0)
+            if(cfdi.folio > 0) 
             {
                 CfdiXmlBuilder xmlBuilder = new CfdiXmlBuilder();
                 cfdi.xml = xmlBuilder.BuildXml(cfdi);

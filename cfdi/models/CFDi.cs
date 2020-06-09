@@ -24,6 +24,7 @@ namespace cfdi.Models
         public double subtotal { get; set; }
         public double totalImp { get; set; }
         public double total { get; set; }
+        public string importeLetra { get; set; }
         public string mPago { get; set; }
         public string formaPago { get; set; }
         public string moneda { get; set; }
