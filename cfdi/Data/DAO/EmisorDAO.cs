@@ -1,5 +1,4 @@
 ﻿using cfdi.Exceptions;
-using cfdi.models;
 using Microsoft.AspNetCore.Mvc.Formatters.Internal;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http2.HPack;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,6 +8,8 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using cfdi.Models.DTO;
+using cfdi.Models;
 
 namespace cfdi.Data.DAO
 {
@@ -37,7 +38,7 @@ namespace cfdi.Data.DAO
             return cert;
         }
 
-        public Emisor GetIssuerInfo(string rfc) 
+        public Emisor GetIssuerInfo(string rfc)
         {
             Emisor emisor = new Emisor();
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();

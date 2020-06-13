@@ -11,21 +11,21 @@ namespace cfdi.Utils
 {
     public class MailSender
     {
-        public static void sendMail(string subject, string[] recipients, Stream xml = null, Stream pdf = null)
+        public static void sendMail(string subject, string[] recipients, Stream xml = null, string pdf = null)
         {
             MailMessage mail = new MailMessage();
-            SmtpClient smtpClient = new SmtpClient("localhost");//
-            mail.From = new MailAddress("noreplay@gastomza.com");//
+            SmtpClient smtpClient = new SmtpClient("in.mailjet.com");//
+            mail.From = new MailAddress("ics@tomza.com");//
             foreach(string recipient in recipients)
                 mail.To.Add(recipient);
             mail.Subject = subject;
-            mail.Body = "La factura electrónica de tu compra";
+            mail.Body = "La factura ele1ctrónica de tu compra";
             if(xml != null)
                 mail.Attachments.Add(new Attachment(xml, "cfdi.xml", "application/xml"));
             if (pdf != null)
-                mail.Attachments.Add(new Attachment(pdf, "Recibo.pdf", "application/pdf"));
+                mail.Attachments.Add(new Attachment(pdf, "application/pdf"));
             smtpClient.Port = 25;
-            //smtpClient.Credentials = new NetworkCredential("noreplay@gastomza.com", "Amonos123");
+            smtpClient.Credentials = new NetworkCredential("839ee32ede1fd662a560afa16925c14b", "faa1df3b77854cd13a2313c8a1184ace");
             try
             {
                 smtpClient.Send(mail);

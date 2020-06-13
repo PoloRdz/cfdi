@@ -1,5 +1,4 @@
-﻿using cfdi.models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +30,7 @@ namespace cfdi.Models
         public string RfcProvCertif { get; set; }
         public string NoCertificadoSat { get; set; }
         public string NoCertificadoEmisor { get; set; }
+        public string cadenaCertificadoSat { get; set; }
         public string selloSat { get; set; }
         public string selloEmisor { get; set; }
         public string folioFiscal { get; set; }

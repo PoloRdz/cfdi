@@ -7,7 +7,7 @@ namespace cfdi.Utils
 {
     public class ConvertidorImporte
     {
-        public static string enletras(double num)
+        public static string enletras(double num, string moneda)
         {
             string res, dec = "";
             Int64 entero;
@@ -21,7 +21,7 @@ namespace cfdi.Utils
             }
 
             res = toText(Convert.ToDouble(entero)) + dec;
-            return res;
+            return res + " " + moneda;
         }
 
         private static string toText(double value)

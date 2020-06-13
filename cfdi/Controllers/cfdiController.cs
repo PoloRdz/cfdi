@@ -15,11 +15,11 @@ namespace cfdi.Controllers
     public class cfdiController : ControllerBase
     {
         // GET: api/cfdi
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok();
-        }
+        //[HttpGet]
+        //public IActionResult Get()
+        //{
+        //    return Ok();
+        //}
 
         // GET: api/cfdi/5
         //[HttpGet("{id}", Name = "Get")]
@@ -36,7 +36,7 @@ namespace cfdi.Controllers
             {
                 TimbradoService timService = new TimbradoService();
                 timService.Timbrar(cfdi);
-                return Ok(cfdi);
+                return Ok(value: cfdi);
             }
             catch(InvalidRFCException e)
             {
@@ -52,7 +52,7 @@ namespace cfdi.Controllers
             }
             catch(InvoiceNumberAvailabilityException e)
             {
-                return BadRequest(e.Message);
+                return Conflict(e.Message);
             }
             catch(Exception e)
             {
@@ -65,15 +65,15 @@ namespace cfdi.Controllers
         }
 
         // PUT: api/cfdi/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }

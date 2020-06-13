@@ -14,63 +14,106 @@ namespace cfdi.Data.DAO
         public void saveCFDI(CFDi cfdi, bool guardarConceptos)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand command = new SqlCommand("PG_SV_CERTCERTIFICADO_INFO", cnn);
-            command.Transaction = cnn.BeginTransaction("CfdiTransaction");
-            command.CommandType = CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@PP_L_DEBUG", 0);
-            command.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
-            command.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+            SqlCommand cmd = new SqlCommand("PG_SV_CERTCERTIFICADO_INFO", cnn);
+            cmd.Transaction = cnn.BeginTransaction("CfdiTransaction");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
             //////////////////////////////////////////////////////////////
-            command.Parameters.AddWithValue("@PP_ID_FACTURA", cfdi.idFolio).Direction = ParameterDirection.InputOutput;
-            command.Parameters.AddWithValue("@PP_FOLIO", cfdi.folio).Direction = ParameterDirection.InputOutput;
-            command.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", cfdi.emisor.idSucursal);
-            command.Parameters.AddWithValue("@PP_FOLIO_FISCAL", cfdi.folioFiscal == null? "" : cfdi.folioFiscal);
-            command.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.nombreReceptor);
-            command.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.rfcReceptor);
-            command.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.email);
-            command.Parameters.AddWithValue("@PP_USO_CFDI", cfdi.usoCFDi);
-            command.Parameters.AddWithValue("@PP_SERIE", cfdi.serie == null ? "" : cfdi.serie);
-            command.Parameters.AddWithValue("@PP_K_ESTATUS_FACTURA", 1);
-            command.Parameters.AddWithValue("@PP_FECHA_CERTIFICACION", cfdi.fechaCert);
-            command.Parameters.AddWithValue("@PP_FECHA_EMISION", cfdi.fecha);
-            command.Parameters.AddWithValue("@PP_NO_CERTIFICADO_SAT", cfdi.NoCertificadoSat == null ? "" : cfdi.NoCertificadoSat);
-            command.Parameters.AddWithValue("@PP_FORMA_PAGO", cfdi.formaPago);
-            command.Parameters.AddWithValue("@PP_NO_CERTIFICADO_EMISOR", cfdi.NoCertificadoEmisor == null ? "" : cfdi.NoCertificadoEmisor);
-            command.Parameters.AddWithValue("@PP_METODO_PAGO", cfdi.mPago);
-            command.Parameters.AddWithValue("@PP_SUB_TOTAL", cfdi.subtotal);
-            command.Parameters.AddWithValue("@PP_SUBTOTAL_IVA", 0.0);
-            command.Parameters.AddWithValue("@PP_TOTAL_IVA", cfdi.totalImp);
-            command.Parameters.AddWithValue("@PP_TOTAL", cfdi.total);
-            command.Parameters.AddWithValue("@PP_IMPORTE_LETRA", cfdi.importeLetra);
-            command.Parameters.AddWithValue("@PP_CADENA_CERTIFICADO_SAT", cfdi.selloSat == null ? "" : cfdi.selloSat);
-            command.Parameters.AddWithValue("@PP_SELLO_DIGITAL_EMISOR", cfdi.selloEmisor == null ? "" : cfdi.selloEmisor);
-            command.Parameters.AddWithValue("@PP_RFC_PROV_CERTIF", cfdi.RfcProvCertif == null ? "" : cfdi.RfcProvCertif);
-            command.Parameters.AddWithValue("@PP_XML", cfdi.xml == null ? "" : cfdi.xml);
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", cfdi.idFolio).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_FOLIO", cfdi.folio).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", cfdi.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_FOLIO_FISCAL", cfdi.folioFiscal == null? "" : cfdi.folioFiscal);
+            cmd.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.nombreReceptor);
+            cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.rfcReceptor);
+            cmd.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.email);
+            cmd.Parameters.AddWithValue("@PP_USO_CFDI", cfdi.usoCFDi);
+            cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.serie == null ? "" : cfdi.serie);
+            cmd.Parameters.AddWithValue("@PP_K_ESTATUS_FACTURA", guardarConceptos? 1 : 3);
+            cmd.Parameters.AddWithValue("@PP_FECHA_CERTIFICACION", cfdi.fechaCert);
+            cmd.Parameters.AddWithValue("@PP_FECHA_EMISION", cfdi.fecha);
+            cmd.Parameters.AddWithValue("@PP_NO_CERTIFICADO_SAT", cfdi.NoCertificadoSat == null ? "" : cfdi.NoCertificadoSat);
+            cmd.Parameters.AddWithValue("@PP_FORMA_PAGO", cfdi.formaPago);
+            cmd.Parameters.AddWithValue("@PP_NO_CERTIFICADO_EMISOR", cfdi.NoCertificadoEmisor == null ? "" : cfdi.NoCertificadoEmisor);
+            cmd.Parameters.AddWithValue("@PP_METODO_PAGO", cfdi.mPago);
+            cmd.Parameters.AddWithValue("@PP_SUB_TOTAL", cfdi.subtotal);
+            cmd.Parameters.AddWithValue("@PP_SUBTOTAL_IVA", 0.0);
+            cmd.Parameters.AddWithValue("@PP_TOTAL_IVA", cfdi.totalImp);
+            cmd.Parameters.AddWithValue("@PP_TOTAL", cfdi.total);
+            cmd.Parameters.AddWithValue("@PP_IMPORTE_LETRA", cfdi.importeLetra);
+            cmd.Parameters.AddWithValue("@PP_CADENA_CERTIFICADO_SAT", cfdi.cadenaCertificadoSat == null ? "" : cfdi.cadenaCertificadoSat);
+            cmd.Parameters.AddWithValue("@PP_SELLO_DIGITAL_EMISOR", cfdi.selloEmisor == null ? "" : cfdi.selloEmisor);
+            cmd.Parameters.AddWithValue("@PP_SELLO_DIGITAL_SAT", cfdi.selloSat == null ? "" : cfdi.selloSat);
+            cmd.Parameters.AddWithValue("@PP_RFC_PROV_CERTIF", cfdi.RfcProvCertif == null ? "" : cfdi.RfcProvCertif);
+            cmd.Parameters.AddWithValue("@PP_XML", cfdi.xml == null ? "" : cfdi.xml);
             try
             {
-                SqlDataReader reader = command.ExecuteReader();
-                cfdi.idFolio = (int)command.Parameters["@PP_ID_FACTURA"].Value;
-                cfdi.folio = (int)command.Parameters["@PP_FOLIO"].Value;
+                SqlDataReader reader = cmd.ExecuteReader();
+                cfdi.idFolio = (int)cmd.Parameters["@PP_ID_FACTURA"].Value;
+                cfdi.folio = (int)cmd.Parameters["@PP_FOLIO"].Value;
                 if (cfdi.folio == -1)
                     throw new InvoiceNumberAvailabilityException("No hay números de folio disponibles para timbrar");
                 reader.Close();
                 if (cfdi.folio > 0 && guardarConceptos)
                 {
-                    saveConceptos(cfdi.conceptos, cfdi.idFolio, command);
-                    saveRelacionados(cfdi.relaciones, cfdi.idFolio, command);
+                    saveConceptos(cfdi.conceptos, cfdi.idFolio, cmd);
+                    saveRelacionados(cfdi.relaciones, cfdi.idFolio, cmd);
                 }                    
-                command.Transaction.Commit();
+                cmd.Transaction.Commit();
             }
             catch (Exception e)
             {
-                command.Transaction.Rollback();
+                cmd.Transaction.Rollback(); 
                 throw e;
             }
             finally
             {
                 cnn.Dispose();
-                command.Dispose();
+                cmd.Dispose();
             }
+        }
+
+        public CFDi getInvoiceInfo(string serie, int folio)
+        {
+            CFDi cfdi = new CFDi();
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FACTURA_INFO", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_SERIE", serie);
+            cmd.Parameters.AddWithValue("@PP_FOLIO", folio);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+                throw new InvalidInvoiceNumberException("Serie y/o Folio invalidos");
+            cfdi.emisor = new Emisor();
+            cfdi.receptor = new Receptor();
+            reader.Read();
+            cfdi.emisor.rfcSucursal = reader.GetValue(0).ToString();
+            cfdi.receptor.rfcReceptor = reader.GetValue(1).ToString();
+            cfdi.folioFiscal = reader.GetValue(2).ToString();
+            cfdi.total = double.Parse(reader.GetValue(3).ToString());
+            cfdi.serie = serie;
+            cfdi.folio = folio;
+            return cfdi;
+        }
+
+        public bool validateInvoiceStatus(string serie, int folio)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_RN_FACTURA_STATUS", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_SERIE", serie);
+            cmd.Parameters.AddWithValue("@PP_FOLIO", folio);
+            cmd.Parameters.AddWithValue("@PP_STATUS_CODE", 0).Direction = ParameterDirection.InputOutput;
+            cmd.ExecuteReader();
+            int statusCode = (int)cmd.Parameters["@PP_STATUS_CODE"].Value;
+            if (statusCode == 1)
+                return true;
+            return false;
         }
 
         public void saveConceptos(Concepto[] conceptos, int idFactura, SqlCommand cmd)
@@ -134,22 +177,55 @@ namespace cfdi.Data.DAO
 
         public void saveRelacionados(CFDiRelacionado[] relacionados, int idFactura, SqlCommand cmd)
         {
-            foreach(CFDiRelacionado relacion in relacionados)
+            if(relacionados != null)
             {
-                cmd.CommandText = "PG_SV_FACTURA_RELACION_INFO";
-                cmd.Parameters.Clear();
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
-                cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
-                cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
-                /////////////////////////////////////////////////
-                cmd.Parameters.AddWithValue("@PP_ID_RELACION", relacion.idRelacion).Direction = ParameterDirection.InputOutput;
-                cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
-                cmd.Parameters.AddWithValue("@PP_TIPO_RELACION", relacion.tipoRelacion);
-                cmd.Parameters.AddWithValue("@PP_UUID", relacion.UUID);
+                foreach (CFDiRelacionado relacion in relacionados)
+                {
+                    cmd.CommandText = "PG_SV_FACTURA_RELACION_INFO";
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+                    cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+                    cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+                    /////////////////////////////////////////////////
+                    cmd.Parameters.AddWithValue("@PP_ID_RELACION", relacion.idRelacion).Direction = ParameterDirection.InputOutput;
+                    cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
+                    cmd.Parameters.AddWithValue("@PP_TIPO_RELACION", relacion.tipoRelacion);
+                    cmd.Parameters.AddWithValue("@PP_UUID", relacion.UUID);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    relacion.idRelacion = (int)cmd.Parameters["@PP_ID_RELACION"].Value;
+                    reader.Close();
+                }
+            }            
+        }
+
+        public void cancelarTimbre(CFDi cfdi)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_UP_CANCELAR_FACTURA", cnn);
+            cmd.Transaction = cnn.BeginTransaction("CfdiTransaction");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+            /////////////////////////////////////////////////
+            cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.serie);
+            cmd.Parameters.AddWithValue("@PP_FOLIO", cfdi.folio);
+            try
+            {
                 SqlDataReader reader = cmd.ExecuteReader();
-                relacion.idRelacion = (int)cmd.Parameters["@PP_ID_RELACION"].Value;
                 reader.Close();
+                cmd.Transaction.Commit();
+            }
+            catch(Exception e)
+            {
+                cmd.Transaction.Rollback();
+                throw e;
+            }
+            finally
+            {
+                cnn.Dispose();
+                cmd.Dispose();
             }
         }
     }

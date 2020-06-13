@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.ReportSource;
+using CrystalDecisions.Shared;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -7,8 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using cfdi.Data;
 using cfdi.Data.DAO;
+using System.Web;
 using cfdi.Exceptions;
-using cfdi.models;
 using cfdi.Models;
 using cfdi.Utils;
 using Microsoft.VisualBasic.CompilerServices;
@@ -24,7 +27,7 @@ namespace cfdi.Services
             CFDiDAO cfdiDAO = new CFDiDAO();
             cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.rfcSucursal);
             cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.rfcSucursal);
-            cfdi.importeLetra = ConvertidorImporte.enletras(cfdi.total);
+            cfdi.importeLetra = ConvertidorImporte.enletras(cfdi.total, cfdi.moneda);
             cfdi.fechaCert = DateTime.Now;
             cfdiDAO.saveCFDI(cfdi, true);
             if(cfdi.folio > 0) 
@@ -32,11 +35,14 @@ namespace cfdi.Services
                 CfdiXmlBuilder xmlBuilder = new CfdiXmlBuilder();
                 cfdi.xml = xmlBuilder.BuildXml(cfdi);
                 //timbrar xml
-                //Descomentar 
+                //timbrarFacturaWS(cfdi);
+                ////Obtener los datos del xml timbrado
                 //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
+
                 Stream xmlStream = StreamBuilder.getStreamFromString(cfdi.xml);
-                cfdi.xml = null;
+                //cfdi.xml = null;
+                cfdi.emisor.certificado = null;
                 Thread mailSendThread = new Thread(
                     delegate ()
                     {
@@ -49,6 +55,19 @@ namespace cfdi.Services
             {
                 throw new InvalidCfdiDataException("No fue posible guardar los datos de la factura");
             }
+        }
+
+        public CFDi cancelarTimbre(CFDi cfdi)
+        {
+            CFDiDAO cfdiDAO = new CFDiDAO();
+            if (!cfdiDAO.validateInvoiceStatus(cfdi.serie, cfdi.folio))
+                throw new InvalidInvoiceStatusException("El estatus actual de la factura no permite cancelar");
+            cfdi = cfdiDAO.getInvoiceInfo(cfdi.serie, cfdi.folio);
+            CfdiXmlBuilder builder = new CfdiXmlBuilder();
+            cfdi.xml = builder.BuildCancelacionXml(cfdi);
+            //WS cancelar
+            cfdiDAO.cancelarTimbre(cfdi);
+            return cfdi;
         }
 
         public async void timbrarFacturaWS(CFDi cfdi)

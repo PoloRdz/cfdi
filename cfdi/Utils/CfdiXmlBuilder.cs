@@ -1,8 +1,10 @@
 ﻿using cfdi.Models;
+using cfdi.Models.DTO;
 using cfdi.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -28,7 +30,7 @@ namespace cfdi.Utils
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
             XmlElement nodeComprobante = (XmlElement)xml.AppendChild(xml.CreateElement("Comprobante"));
             nodeComprobante.SetAttribute("Version", "3.3");
-            nodeComprobante.SetAttribute("Serie", "NG"); // Generar dependiendo del tipo de venta y compañia que genera la factura
+            nodeComprobante.SetAttribute("Serie", "FCB"); // Generar dependiendo del tipo de venta y compañia que genera la factura
             nodeComprobante.SetAttribute("Folio", cfdi.folio.ToString()); //  
             nodeComprobante.SetAttribute("Fecha", cfdi.fecha.ToString());
             nodeComprobante.SetAttribute("FormaPago", cfdi.formaPago); // TODO: pendiente
@@ -38,7 +40,7 @@ namespace cfdi.Utils
             nodeComprobante.SetAttribute("SubTotal", cfdi.subtotal.ToString());
             nodeComprobante.SetAttribute("Total", cfdi.total.ToString());
             nodeComprobante.SetAttribute("MetodoPago", cfdi.mPago); //
-            nodeComprobante.SetAttribute("TipoDeComprobante", "E"); //
+            nodeComprobante.SetAttribute("TipoDeComprobante", "I"); //
             nodeComprobante.SetAttribute("TipoCambio", "1");
             nodeComprobante.SetAttribute("Moneda", cfdi.moneda);
             nodeComprobante.SetAttribute("Sello", "xxx");
@@ -93,6 +95,21 @@ namespace cfdi.Utils
             if (this.totalTraslados > 0.0D)
                 nodeImpuestos.SetAttribute("TotalImpuestosTrasladados", this.totalTraslados.ToString());
 
+            return xml.OuterXml;
+        }
+
+        public string BuildCancelacionXml(CFDi cfdi)
+        {
+            XmlDocument xml = new XmlDocument();
+            xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
+            XmlElement nodeCancelacion = (XmlElement)xml.AppendChild(xml.CreateElement("Cancelacion"));
+            nodeCancelacion.SetAttribute("RfcEmisor", cfdi.emisor.rfcSucursal);
+            nodeCancelacion.SetAttribute("Fecha", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
+            nodeCancelacion.SetAttribute("RfcReceptor", cfdi.receptor.rfcReceptor);
+            nodeCancelacion.SetAttribute("Total", cfdi.total.ToString("F2"));
+            XmlElement nodeFolios = (XmlElement)nodeCancelacion.AppendChild(xml.CreateElement("Folios"));
+            XmlElement nodeUUID = (XmlElement)nodeFolios.AppendChild(xml.CreateElement("UUID"));
+            nodeUUID.InnerText = cfdi.folioFiscal;
             return xml.OuterXml;
         }
 
@@ -156,6 +173,13 @@ namespace cfdi.Utils
                         cfdi.selloSat = timbreNode.Attributes["SelloSAT"].InnerXml;
                         cfdi.NoCertificadoSat = timbreNode.Attributes["NoCertificadoSAT"].InnerXml;
                         cfdi.RfcProvCertif = timbreNode.Attributes["RfcProvCertif"].InnerXml;
+                        StringBuilder cadena = new StringBuilder();
+                        cadena.Append("||").Append(timbreNode.Attributes["Version"].InnerText).Append("|")
+                              .Append(cfdi.folioFiscal).Append("|")
+                              .Append(timbreNode.Attributes["FechaTimbrado"].InnerText).Append("|")
+                              .Append(timbreNode.Attributes["SelloCFD"].InnerText).Append("|")
+                              .Append(timbreNode.Attributes["NoCertificadoSAT"].InnerText).Append("||");
+                        cfdi.cadenaCertificadoSat = cadena.ToString();
                     }
                 }
             }
