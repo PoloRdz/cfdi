@@ -54,14 +54,21 @@ namespace cfdi.Controllers
             {
                 return Conflict(e.Message);
             }
-            catch(Exception e)
+            catch(WebServiceValidationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (WebServiceCommunicationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
             {
                 //Log error
-                //return BadRequest("Un error inesperado ha sucedido, intentalo mas tarde");
-                Console.Write(e);
-                return BadRequest(e);
+                return BadRequest("Un error inesperado ha sucedido, intentalo mas tarde");
+                //return BadRequest(e);
             }
-            
+
         }
 
         // PUT: api/cfdi/5

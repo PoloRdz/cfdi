@@ -34,11 +34,12 @@ namespace cfdi.Data.DAO
             cert.key = reader.GetValue(1).ToString();
             cert.contrasena = reader.GetValue(2).ToString();
             cert.rutaCert = reader.GetValue(3).ToString();
+            reader.Close();
             cnn.Close();
             return cert;
         }
 
-        public Emisor GetIssuerInfo(string rfc)
+        public Emisor GetIssuerInfo(string rfc, string tipoCompra)
         {
             Emisor emisor = new Emisor();
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -47,6 +48,7 @@ namespace cfdi.Data.DAO
             command.Parameters.AddWithValue("@PP_L_DEBUG", 0);
             command.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
             command.Parameters.AddWithValue("@PP_RFC_EMISOR", rfc);
+            command.Parameters.AddWithValue("@PP_TIPO_COMPRA", tipoCompra);
             SqlDataReader reader = command.ExecuteReader();
             if (!reader.HasRows)
             {
@@ -57,6 +59,8 @@ namespace cfdi.Data.DAO
             emisor.rfcSucursal = reader.GetValue(1).ToString();
             emisor.sucursal = reader.GetValue(2).ToString();
             emisor.regimenFiscal = reader.GetValue(3).ToString();
+            emisor.codigoPostal = reader.GetValue(4).ToString();
+            emisor.serie = reader.GetValue(5).ToString();
             cnn.Close();
             return emisor;
         }

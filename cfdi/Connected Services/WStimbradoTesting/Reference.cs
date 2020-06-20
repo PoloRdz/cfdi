@@ -7,19 +7,19 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ServiceReference1
+namespace WStimbradoTesting
 {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1-preview-30310-0943")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:respuestaTimbrado", ConfigurationName="ServiceReference1.generaCFDIPortType")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="urn:respuestaTimbrado", ConfigurationName="WStimbradoTesting.generaCFDIPortType")]
     public interface generaCFDIPortType
     {
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://gasypetroleos.com/wsFacturacion/generaCFDI.php/generaCFDI/generaCFDI", ReplyAction="*")]
+        [System.ServiceModel.OperationContractAttribute(Action="http://localhost/servicetomza/generaCFDI.php/generaCFDI/generaCFDI/generaCFDI", ReplyAction="*")]
         [System.ServiceModel.XmlSerializerFormatAttribute(Style=System.ServiceModel.OperationFormatStyle.Rpc, SupportFaults=true, Use=System.ServiceModel.OperationFormatUse.Encoded)]
         [return: System.ServiceModel.MessageParameterAttribute(Name="return")]
-        System.Threading.Tasks.Task<ServiceReference1.respuestaTimbrado> generaCFDIAsync(string usuario, string password, string documentoXML);
+        System.Threading.Tasks.Task<WStimbradoTesting.respuestaTimbrado> generaCFDIAsync(string usuario, string password, string documentoXML);
     }
     
     /// <remarks/>
@@ -76,13 +76,13 @@ namespace ServiceReference1
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1-preview-30310-0943")]
-    public interface generaCFDIPortTypeChannel : ServiceReference1.generaCFDIPortType, System.ServiceModel.IClientChannel
+    public interface generaCFDIPortTypeChannel : WStimbradoTesting.generaCFDIPortType, System.ServiceModel.IClientChannel
     {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.Tools.ServiceModel.Svcutil", "2.0.1-preview-30310-0943")]
-    public partial class generaCFDIPortTypeClient : System.ServiceModel.ClientBase<ServiceReference1.generaCFDIPortType>, ServiceReference1.generaCFDIPortType
+    public partial class generaCFDIPortTypeClient : System.ServiceModel.ClientBase<WStimbradoTesting.generaCFDIPortType>, WStimbradoTesting.generaCFDIPortType
     {
         
         /// <summary>
@@ -125,7 +125,7 @@ namespace ServiceReference1
         {
         }
         
-        public System.Threading.Tasks.Task<ServiceReference1.respuestaTimbrado> generaCFDIAsync(string usuario, string password, string documentoXML)
+        public System.Threading.Tasks.Task<WStimbradoTesting.respuestaTimbrado> generaCFDIAsync(string usuario, string password, string documentoXML)
         {
             return base.Channel.generaCFDIAsync(usuario, password, documentoXML);
         }
@@ -158,7 +158,7 @@ namespace ServiceReference1
         {
             if ((endpointConfiguration == EndpointConfiguration.generaCFDIPort))
             {
-                return new System.ServiceModel.EndpointAddress("http://gasypetroleos.com/wsFacturacion/generaCFDI.php/generaCFDI");
+                return new System.ServiceModel.EndpointAddress("http://localhost/servicetomza/generaCFDI.php/generaCFDI/generaCFDI");
             }
             throw new System.InvalidOperationException(string.Format("No se pudo encontrar un punto de conexión con el nombre \"{0}\".", endpointConfiguration));
         }

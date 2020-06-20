@@ -1,47 +1,46 @@
-<?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:respuestaTimbrado" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:respuestaTimbrado" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:types>
+<definitions xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="urn:respuestaTimbrado" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="urn:respuestaTimbrado">
+  <types>
     <xsd:schema elementFormDefault="qualified" targetNamespace="urn:respuestaTimbrado">
-      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
-      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
+      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/"/>
       <xsd:complexType name="respuestaTimbrado">
         <xsd:all>
-          <xsd:element name="documentoProcesado" type="xsd:string" />
-          <xsd:element name="codigoResultado" type="xsd:string" />
-          <xsd:element name="codigoDescripcion" type="xsd:string" />
+          <xsd:element name="documentoProcesado" type="xsd:string"/>
+          <xsd:element name="codigoResultado" type="xsd:string"/>
+          <xsd:element name="codigoDescripcion" type="xsd:string"/>
         </xsd:all>
       </xsd:complexType>
     </xsd:schema>
-  </wsdl:types>
-  <wsdl:message name="generaCFDIRequest">
-    <wsdl:part name="usuario" type="xsd:string" />
-    <wsdl:part name="password" type="xsd:string" />
-    <wsdl:part name="documentoXML" type="xsd:string" />
-  </wsdl:message>
-  <wsdl:message name="generaCFDIResponse">
-    <wsdl:part name="return" type="tns:respuestaTimbrado" />
-  </wsdl:message>
-  <wsdl:portType name="generaCFDIPortType">
-    <wsdl:operation name="generaCFDI">
-      <wsdl:input message="tns:generaCFDIRequest" />
-      <wsdl:output message="tns:generaCFDIResponse" />
-    </wsdl:operation>
-  </wsdl:portType>
-  <wsdl:binding name="generaCFDIBinding" type="tns:generaCFDIPortType">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="generaCFDI">
-      <soap:operation soapAction="http://gasypetroleos.com/wsFacturacion/generaCFDI.php/generaCFDI/generaCFDI" style="rpc" />
-      <wsdl:input>
-        <soap:body use="encoded" namespace="urn:respuestaTimbrado" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="encoded" namespace="urn:respuestaTimbrado" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" />
-      </wsdl:output>
-    </wsdl:operation>
-  </wsdl:binding>
-  <wsdl:service name="generaCFDI">
-    <wsdl:port name="generaCFDIPort" binding="tns:generaCFDIBinding">
-      <soap:address location="http://gasypetroleos.com/wsFacturacion/generaCFDI.php/generaCFDI" />
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
+  </types>
+  <message name="generaCFDIRequest">
+    <part name="usuario" type="xsd:string"/>
+    <part name="password" type="xsd:string"/>
+    <part name="documentoXML" type="xsd:string"/>
+  </message>
+  <message name="generaCFDIResponse">
+    <part name="return" type="tns:respuestaTimbrado"/>
+  </message>
+  <portType name="generaCFDIPortType">
+    <operation name="generaCFDI">
+      <input message="tns:generaCFDIRequest"/>
+      <output message="tns:generaCFDIResponse"/>
+    </operation>
+  </portType>
+  <binding name="generaCFDIBinding" type="tns:generaCFDIPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="generaCFDI">
+      <soap:operation soapAction="http://localhost/servicetomza/generaCFDI.php/generaCFDI/generaCFDI/generaCFDI" style="rpc"/>
+      <input>
+        <soap:body use="encoded" namespace="urn:respuestaTimbrado" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="encoded" namespace="urn:respuestaTimbrado" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="generaCFDI">
+    <port name="generaCFDIPort" binding="tns:generaCFDIBinding">
+      <soap:address location="http://localhost/servicetomza/generaCFDI.php/generaCFDI/generaCFDI"/>
+    </port>
+  </service>
+</definitions>

@@ -13,11 +13,14 @@
       "System.Collections.Generic.Dictionary`2"
     ],
     "namespaceMappings": [
-      "*, ServiceReference1"
+      "*, WStimbrado"
     ],
     "references": [
       "C:\\Users\\Hipolito Rodriguez\\source\\repos\\cfdi\\cfdi\\bin\\Debug\\netcoreapp2.1\\diFirmaSAT.dll",
       "C:\\Users\\Hipolito Rodriguez\\source\\repos\\cfdi\\cfdi\\bin\\Debug\\netcoreapp2.1\\diFirmaSatNet.dll",
+      "CrystalDecisions.CrystalReports.Engine, {CrystalReports.Engine, 13.0.4000}",
+      "CrystalDecisions.ReportSource, {CrystalReports.ReportSource, 13.0.4000}",
+      "CrystalDecisions.Shared, {CrystalReports.Shared, 13.0.4000}",
       "dotnet-aspnet-codegenerator-design, {Microsoft.VisualStudio.Web.CodeGeneration.Design, 2.1.10}",
       "Microsoft.AspNetCore, {Microsoft.AspNetCore, 2.1.1}",
       "Microsoft.AspNetCore.Antiforgery, {Microsoft.AspNetCore.Antiforgery, 2.1.1}",
@@ -186,6 +189,9 @@
       "netstandard, {Microsoft.NETCore.App, 2.1.0}",
       "Newtonsoft.Json, {Newtonsoft.Json, 11.0.2}",
       "Newtonsoft.Json.Bson, {Newtonsoft.Json.Bson, 1.0.1}",
+      "NLog, {NLog, 4.7.2}",
+      "NLog.Extensions.Logging, {NLog.Extensions.Logging, 1.6.2}",
+      "NLog.Web.AspNetCore, {NLog.Web.AspNetCore, 4.9.2}",
       "NuGet.Frameworks, {NuGet.Frameworks, 4.7.0}",
       "Remotion.Linq, {Remotion.Linq, 2.2.0}",
       "System, {Microsoft.NETCore.App, 2.1.0}",
@@ -313,6 +319,9 @@
       "System.Security.Principal, {Microsoft.NETCore.App, 2.1.0}",
       "System.Security.Principal.Windows, {System.Security.Principal.Windows, 4.5.0}",
       "System.Security.SecureString, {Microsoft.NETCore.App, 2.1.0}",
+      "System.ServiceModel, {System.ServiceModel.Primitives, 4.7.0}",
+      "System.ServiceModel.Http, {System.ServiceModel.Http, 4.7.0}",
+      "System.ServiceModel.Primitives, {System.ServiceModel.Primitives, 4.7.0}",
       "System.ServiceModel.Web, {Microsoft.NETCore.App, 2.1.0}",
       "System.ServiceProcess, {Microsoft.NETCore.App, 2.1.0}",
       "System.Text.Encoding, {Microsoft.NETCore.App, 2.1.0}",

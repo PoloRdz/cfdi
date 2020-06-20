@@ -20,6 +20,7 @@ namespace cfdi.Models
         public int folio { get; set; }
         public DateTime fecha { get; set; }
         public Concepto[] conceptos { get; set; }
+        public Pagos pagos { get; set; }
         public double subtotal { get; set; }
         public double totalImp { get; set; }
         public double total { get; set; }

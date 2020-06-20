@@ -11,6 +11,8 @@ namespace cfdi.Data.DAO
 {
     public class CFDiDAO
     {
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         public void saveCFDI(CFDi cfdi, bool guardarConceptos)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -29,7 +31,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.rfcReceptor);
             cmd.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.email);
             cmd.Parameters.AddWithValue("@PP_USO_CFDI", cfdi.usoCFDi);
-            cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.serie == null ? "" : cfdi.serie);
+            cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.emisor.serie == null ? "" : cfdi.emisor.serie);
             cmd.Parameters.AddWithValue("@PP_K_ESTATUS_FACTURA", guardarConceptos? 1 : 3);
             cmd.Parameters.AddWithValue("@PP_FECHA_CERTIFICACION", cfdi.fechaCert);
             cmd.Parameters.AddWithValue("@PP_FECHA_EMISION", cfdi.fecha);
@@ -64,6 +66,7 @@ namespace cfdi.Data.DAO
             }
             catch (Exception e)
             {
+                logger.Error(e);
                 cmd.Transaction.Rollback(); 
                 throw e;
             }
@@ -126,6 +129,26 @@ namespace cfdi.Data.DAO
                     impuesto.idImpuesto = saveConceptoImpuesto(impuesto, concepto.idConcepto, cmd);
                 }
             }
+        }
+
+        public string getCFDIXml(int idFolio)
+        {
+            string xml = "";
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_CERT_XML_INFO", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_ID_FOLIO", idFolio);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (reader.HasRows)
+            {
+                reader.Read();
+                xml = reader.GetValue(0).ToString();
+            }
+            reader.Close();
+            cnn.Dispose();
+            return xml;
         }
 
         private int saveConcepto(Concepto concepto, int idFactura, SqlCommand cmd)
@@ -219,6 +242,7 @@ namespace cfdi.Data.DAO
             }
             catch(Exception e)
             {
+                logger.Error(e);
                 cmd.Transaction.Rollback();
                 throw e;
             }

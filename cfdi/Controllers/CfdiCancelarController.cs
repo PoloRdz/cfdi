@@ -46,6 +46,10 @@ namespace cfdi.Controllers
             {
                 return BadRequest(e.Message);
             }
+            catch (WebServiceCommunicationException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT: api/CfdiCancelar/5
