@@ -10,5 +10,6 @@ namespace cfdi.Models
         public int idRelacion { get; set; }
         public string tipoRelacion { get; set; }
         public string UUID { get; set; }
+        public string tipoComprobante { get; set; }
     }
 }

@@ -75,9 +75,9 @@ namespace cfdi.Services
                 var timbreRespuesta = new respuestaTimbrado();
                 cfdiDAO.saveCFDI(cfdi, false);
                 //timbrar xml
-                timbrarFacturaWS(cfdi);
+                //timbrarFacturaWS(cfdi);
                 //Obtener los datos del xml timbrado
-                xmlBuilder.obtenerDatosTimbre(cfdi);
+                //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
                 logger.Info("Cadena original del complemento de certificacion digital del SAT: " + cfdi.cadenaCertificadoSat);
                 sendMail(cfdi);

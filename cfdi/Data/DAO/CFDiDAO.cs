@@ -77,6 +77,25 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public DoctoRelacionado getDoctoRelacionadoInfo(string folio, string serie)
+        {
+            DoctoRelacionado docRelacion = new DoctoRelacionado();
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FACTURA_PAGOS_INFO", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_SERIE", serie);
+            cmd.Parameters.AddWithValue("@PP_FOLIO", folio);
+            SqlDataReader reader = cmd.ExecuteReader();
+            if (!reader.HasRows)
+                throw new InvalidInvoiceNumberException("Serie y/o Folio invalidos");
+            reader.Read();
+            docRelacion.idDocumento = reader.GetValue(0).ToString();
+            docRelacion.numParcialidad = int.Parse(reader.GetValue(1).ToString());
+            return docRelacion;
+        }
+
         public CFDi getInvoiceInfo(string serie, int folio)
         {
             CFDi cfdi = new CFDi();

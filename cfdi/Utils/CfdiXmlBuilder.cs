@@ -18,6 +18,7 @@ namespace cfdi.Utils
 
         public string BuildXml(CFDi cfdi)
         {
+            string tipoComprobante = cfdi.tipoCompra.Substring(0, 1);
             firmaService = new FirmaSatService(
                 cfdi.emisor.certificado.rutaCert + "\\",
                 cfdi.emisor.certificado.cert,
@@ -33,18 +34,27 @@ namespace cfdi.Utils
             nodeComprobante.SetAttribute("serie", cfdi.emisor.serie); 
             nodeComprobante.SetAttribute("folio", cfdi.folio.ToString()); 
             nodeComprobante.SetAttribute("fecha", cfdi.fecha.ToString("yyyy-MM-ddTHH:mm:ss"));
-            if(cfdi.tipoCompra.Substring(0, 1) != "P")
-                nodeComprobante.SetAttribute("FormaPago", cfdi.formaPago); // TODO: 
-            nodeComprobante.SetAttribute("CondicionesDePago", cfdi.tipoVenta); // TODO: pendiente
-            nodeComprobante.SetAttribute("TipoDeComprobante", cfdi.tipoCompra.Substring(0, 1));
-            if (cfdi.tipoCompra.Substring(0, 1) != "P")
+            if(tipoComprobante != "P" && tipoComprobante != "T")
+                nodeComprobante.SetAttribute("FormaPago", cfdi.formaPago); // 
+            if(tipoComprobante == "I" || tipoComprobante == "E") 
+                nodeComprobante.SetAttribute("CondicionesDePago", cfdi.tipoVenta); // TODO: pendiente
+            nodeComprobante.SetAttribute("TipoDeComprobante", tipoComprobante);
+            if (tipoComprobante != "P" && tipoComprobante != "T")
                 nodeComprobante.SetAttribute("MetodoPago", cfdi.mPago); //
             nodeComprobante.SetAttribute("LugarExpedicion", cfdi.emisor.codigoPostal);
             nodeComprobante.SetAttribute("Moneda", cfdi.moneda);
-            if (cfdi.tipoCompra.Substring(0, 1) != "P")
+            if (tipoComprobante != "P")
                 nodeComprobante.SetAttribute("TipoCambio", "1");
-            nodeComprobante.SetAttribute("SubTotal", cfdi.subtotal.ToString("F2"));
-            nodeComprobante.SetAttribute("Total", cfdi.total.ToString("F2"));            
+            if (tipoComprobante == "T" || tipoComprobante == "P")
+            {
+                nodeComprobante.SetAttribute("SubTotal", "0");
+                nodeComprobante.SetAttribute("Total", "0");
+            }
+            else
+            {
+                nodeComprobante.SetAttribute("SubTotal", cfdi.subtotal.ToString("F2"));
+                nodeComprobante.SetAttribute("Total", cfdi.total.ToString("F2"));
+            }
             nodeComprobante.SetAttribute("Sello", "xxx");                       
             nodeComprobante.SetAttribute("Certificado", this.firmaService.GetCertAsString());
             nodeComprobante.SetAttribute("NoCertificado", this.firmaService.GetCertNumber());
@@ -94,14 +104,17 @@ namespace cfdi.Utils
                     }
                 }
             }
-            XmlElement nodeImpuestos = xml.CreateElement("Impuestos");
-            calculateTotalTaxes(cfdi.conceptos, nodeImpuestos, xml);
-            if (this.totalRetenciones > 0.0D)
-                nodeImpuestos.SetAttribute("TotalImpuestosRetenidos", this.totalRetenciones.ToString("F2"));
-            if (this.totalTraslados > 0.0D)
-                nodeImpuestos.SetAttribute("TotalImpuestosTrasladados", this.totalTraslados.ToString("F2"));
-            if (this.totalRetenciones > 0.0D || this.totalTraslados > 0.0D)
-                nodeComprobante.AppendChild(nodeImpuestos);
+            if(tipoComprobante == "I" || tipoComprobante == "E")
+            {
+                XmlElement nodeImpuestos = xml.CreateElement("Impuestos");
+                calculateTotalTaxes(cfdi.conceptos, nodeImpuestos, xml);
+                if (this.totalRetenciones > 0.0D)
+                    nodeImpuestos.SetAttribute("TotalImpuestosRetenidos", this.totalRetenciones.ToString("F2"));
+                if (this.totalTraslados > 0.0D)
+                    nodeImpuestos.SetAttribute("TotalImpuestosTrasladados", this.totalTraslados.ToString("F2"));
+                if (this.totalRetenciones > 0.0D || this.totalTraslados > 0.0D)
+                    nodeComprobante.AppendChild(nodeImpuestos);
+            }            
 
             if(cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
             {
