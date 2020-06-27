@@ -1,7 +1,4 @@
-﻿using CrystalDecisions.CrystalReports.Engine;
-using CrystalDecisions.ReportSource;
-using CrystalDecisions.Shared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -61,7 +58,7 @@ namespace cfdi.Services
             CFDiDAO cfdiDAO = new CFDiDAO();
             if(cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
             {
-
+                getDoctoRelacionados(cfdi.pagos.doctoRelacionados, cfdiDAO);
             }
             cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.rfcSucursal, cfdi.tipoCompra.Substring(0, 1));
             cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.rfcSucursal);
@@ -74,9 +71,7 @@ namespace cfdi.Services
                 cfdi.xml = xmlBuilder.BuildXml(cfdi);
                 var timbreRespuesta = new respuestaTimbrado();
                 cfdiDAO.saveCFDI(cfdi, false);
-                //timbrar xml
                 //timbrarFacturaWS(cfdi);
-                //Obtener los datos del xml timbrado
                 //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
                 logger.Info("Cadena original del complemento de certificacion digital del SAT: " + cfdi.cadenaCertificadoSat);
@@ -85,6 +80,33 @@ namespace cfdi.Services
             else
             {
                 throw new InvalidCfdiDataException("No fue posible guardar los datos de la factura");
+            }
+        }
+
+        public void getDoctoRelacionados(DoctoRelacionado[] doctoRelacionados, CFDiDAO cfdiDAO)
+        {
+            foreach (DoctoRelacionado docRelacionado in doctoRelacionados)
+            {
+                DoctoRelacionado relacion = null;
+                relacion = cfdiDAO.getDoctoRelacionadoInfo(docRelacionado.folio, docRelacionado.serie);
+                if (relacion != null)
+                {
+                    docRelacionado.idDocumento = relacion.idDocumento;
+                    docRelacionado.impSaldoAnt = relacion.impSaldoAnt;
+                    docRelacionado.numParcialidad = relacion.numParcialidad;
+                    docRelacionado.idFactura = relacion.idFactura;
+                    if (docRelacionado.impPagado > docRelacionado.impSaldoAnt)
+                        throw new PaymentGreaterThanBalanceException("El importe de pago no puede ser mayor a el saldo de la factura");
+                    docRelacionado.impSaldoInsoluto = docRelacionado.impSaldoAnt - docRelacionado.impPagado;
+                    if(docRelacionado.idDocumento == null || docRelacionado.idDocumento.Length <= 0)
+                    {
+                        throw new InvalidInvoiceTypeException("La factura a la que se quiere asignar el pago no es de tipo Pagos Parciales o Diferidos");
+                    }
+                    if(docRelacionado.impSaldoAnt == 0.0)
+                    {
+                        throw new InvoiceAtZeroException("El saldo de la factura a la que se quiere asignar este pago está en 0");
+                    }
+                }
             }
         }
 

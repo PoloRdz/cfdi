@@ -132,7 +132,7 @@ namespace cfdi.Utils
                 {
                     XmlElement nodeDoctoRelacionado = (XmlElement)nodePago.AppendChild(xml.CreateElement("DoctoRelacionado"));
                     nodeDoctoRelacionado.SetAttribute("IdDocumento", doctRelacion.idDocumento);
-                    nodeDoctoRelacionado.SetAttribute("MonedaDR", doctRelacion.modedaDR);
+                    nodeDoctoRelacionado.SetAttribute("MonedaDR", doctRelacion.monedaDR);
                     nodeDoctoRelacionado.SetAttribute("MetodoDePagoDR", doctRelacion.metodoDePagoDR);
                     nodeDoctoRelacionado.SetAttribute("NumParcialidad", doctRelacion.numParcialidad.ToString());
                     nodeDoctoRelacionado.SetAttribute("ImpSaldoAnt", doctRelacion.impSaldoAnt.ToString("F2"));

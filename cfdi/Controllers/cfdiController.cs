@@ -14,73 +14,43 @@ namespace cfdi.Controllers
     [ApiController]
     public class cfdiController : ControllerBase
     {
-        // GET: api/cfdi
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    return Ok();
-        //}
 
-        // GET: api/cfdi/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        // POST: api/cfdi
         [HttpPost]
         public IActionResult Post(CFDi cfdi)
         {
+            var results = new Dictionary<string, Object>();
             try
             {
                 TimbradoService timService = new TimbradoService();
                 timService.Timbrar(cfdi);
-                return Ok(value: cfdi);
-            }
-            catch(InvalidRFCException e)
-            {
-                return NotFound(e.Message);
-            }
-            catch(CertificateException e)
-            {
-                return Conflict(e.Message);
-            }
-            catch(InvalidCfdiDataException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch(InvoiceNumberAvailabilityException e)
-            {
-                return Conflict(e.Message);
-            }
-            catch(WebServiceValidationException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (WebServiceCommunicationException e)
-            {
-                return BadRequest(e.Message);
+                results.Add("cfdi", cfdi);
+                return Ok(results);
             }
             catch (Exception e)
             {
-                //Log error
-                return BadRequest("Un error inesperado ha sucedido, intentalo mas tarde");
-                //return BadRequest(e);
+                results.Add("message", e.Message);
+                if (e is InvalidRFCException)
+                {
+                    return NotFound(results);
+                }
+                if (e is CertificateException || e is InvoiceNumberAvailabilityException)
+                {
+                    return Conflict(results);
+                }
+                if (e is InvalidCfdiDataException || e is WebServiceValidationException
+                    || e is WebServiceCommunicationException || e is InvalidInvoiceTypeException
+                    || e is InvoiceAtZeroException || e is PaymentGreaterThanBalanceException
+                    || e is InvalidInvoiceTypeException || e is InvoiceAtZeroException)
+                {
+                    return BadRequest(results);
+                }
+                logger.Error(e.Message);
+                results.Add("message", "Error en el servidor");
+                return BadRequest(results);
             }
 
         }
-
-        // PUT: api/cfdi/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        // DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }
