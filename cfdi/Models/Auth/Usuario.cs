@@ -7,7 +7,7 @@ namespace cfdi.Models.Auth
 {
     public class Usuario
     {
-        public long id { get; set; }
+        public int id { get; set; }
         public string usuario { get; set; }
         public string password { get; set; }
         public string nombre { get; set; }

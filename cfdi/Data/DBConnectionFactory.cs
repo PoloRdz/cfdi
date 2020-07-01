@@ -11,7 +11,7 @@ namespace cfdi.Data
         //Data Source=LVALDEZ\SQLEXPRESS;Initial Catalog=CFD19_GestionCFDi_V9999_R0;User ID=sa;Password=123456
         public static SqlConnection GetOpenConnection()
         {
-            SqlConnection cnn = new SqlConnection("Data Source=LVALDEZ\\SQLEXPRESS;Initial Catalog=CFD19_GestionCFDi_V9999_R0;User ID=sa;Password=123456");
+            SqlConnection cnn = new SqlConnection("Data Source=LAPTOP-6JGQSJGH\\SQLEXPRESS;Initial Catalog=CFD19_GestionCFDi_V9999_R0;User ID=sa;Password=Amonos123");
             cnn.Open();
             return cnn;
         }

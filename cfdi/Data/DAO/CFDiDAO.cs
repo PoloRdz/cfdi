@@ -356,6 +356,7 @@ namespace cfdi.Data.DAO
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
             SqlCommand cmd = new SqlCommand("PG_SK_FACTURAS_TOTAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_TOTAL_REG", 0).Direction = ParameterDirection.InputOutput;
             int total = 0;
             try
@@ -380,6 +381,7 @@ namespace cfdi.Data.DAO
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
             SqlCommand cmd = new SqlCommand("PG_SK_FACTURAS", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_NUM_PAGINA", pagina);
             cmd.Parameters.AddWithValue("@PP_RPP", rpp);
             SqlDataReader rdr = cmd.ExecuteReader();
@@ -390,7 +392,7 @@ namespace cfdi.Data.DAO
                     throw new NotFoundException("No se han encontrado facturas");
                 while (rdr.Read())
                 {                    
-                    facs.Add(getCFDi(rdr));
+                    facs.Add(getCFDiFromReader(rdr));
                 }
                 return facs;
             }
@@ -407,7 +409,7 @@ namespace cfdi.Data.DAO
             }
         }
 
-        private CFDi getCFDi(SqlDataReader rdr)
+        private CFDi getCFDiFromReader(SqlDataReader rdr)
         {
             var fac = new CFDi();
             fac.idFolio = rdr.GetInt32(0);

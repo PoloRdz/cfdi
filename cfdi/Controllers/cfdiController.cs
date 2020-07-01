@@ -30,13 +30,15 @@ namespace cfdi.Controllers
             }
             catch (Exception e)
             {
-                results.Add("message", e.Message);
+               
                 if (e is InvalidRFCException)
                 {
+                    results.Add("message", e.Message);
                     return NotFound(results);
                 }
                 if (e is CertificateException || e is InvoiceNumberAvailabilityException)
                 {
+                    results.Add("message", e.Message);
                     return Conflict(results);
                 }
                 if (e is InvalidCfdiDataException || e is WebServiceValidationException
@@ -44,6 +46,7 @@ namespace cfdi.Controllers
                     || e is InvoiceAtZeroException || e is PaymentGreaterThanBalanceException
                     || e is InvalidInvoiceTypeException || e is InvoiceAtZeroException)
                 {
+                    results.Add("message", e.Message);
                     return BadRequest(results);
                 }
                 logger.Error(e.Message);

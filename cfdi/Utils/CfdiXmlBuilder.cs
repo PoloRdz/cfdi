@@ -25,8 +25,8 @@ namespace cfdi.Utils
                 cfdi.emisor.certificado.key,
                 cfdi.emisor.certificado.contrasena
             );
-            firmaService.ValidateCertAndKey();
-            firmaService.validateCertExpDate();
+            //firmaService.ValidateCertAndKey();
+            //firmaService.validateCertExpDate();
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
             XmlElement nodeComprobante = (XmlElement)xml.AppendChild(xml.CreateElement("Comprobante"));

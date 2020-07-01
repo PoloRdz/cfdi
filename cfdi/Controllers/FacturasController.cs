@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cfdi.Exceptions;
 using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,13 +27,18 @@ namespace cfdi.Controllers
                 return Ok(res);
             } catch(Exception e)
             {
-                res.Add("message", e.Message);
+                if(e is NotFoundException)
+                {
+                    res.Add("message", e.Message);
+                    return NotFound(res);
+                }
+                res.Add("message", "Error en el servidor");
                 return BadRequest(res);
             }            
         }
 
         // GET: api/Facturas/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
