@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using cfdi.Models;
 using cfdi.Services;
 using cfdi.Exceptions;
+using cfdi.Utils;
 
 namespace cfdi.Controllers
 {
@@ -35,7 +36,12 @@ namespace cfdi.Controllers
             try
             {
                 TimbradoService timService = new TimbradoService();
-                timService.Timbrar(cfdi);
+                PDFbuilder PDFbuilder = new PDFbuilder();
+
+                PDFbuilder.PDFgenerate(cfdi);
+
+                //timService.Timbrar(cfdi);
+
                 return Ok(value: cfdi);
             }
             catch(InvalidRFCException e)
