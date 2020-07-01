@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CrystalDecisions.CrystalReports.Engine;
+using CrystalDecisions.ReportSource;
+using CrystalDecisions.Shared;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -53,7 +56,6 @@ namespace cfdi.Services
 
         private void createCFDI(CFDi cfdi)
         {
-            PDFbuilder PDFbuilder = new PDFbuilder();
             logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.rfcSucursal + "; Receptor: " + cfdi.receptor.rfcReceptor);
             EmisorDAO emisorDAO = new EmisorDAO();
             CFDiDAO cfdiDAO = new CFDiDAO();
@@ -73,14 +75,11 @@ namespace cfdi.Services
                 var timbreRespuesta = new respuestaTimbrado();
                 cfdiDAO.saveCFDI(cfdi, false);
                 //timbrar xml
-                timbrarFacturaWS(cfdi);
+                //timbrarFacturaWS(cfdi);
                 //Obtener los datos del xml timbrado
-                xmlBuilder.obtenerDatosTimbre(cfdi);
+                //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
                 logger.Info("Cadena original del complemento de certificacion digital del SAT: " + cfdi.cadenaCertificadoSat);
-
-                PDFbuilder.PDFgenerate(cfdi);
-
                 sendMail(cfdi);
             }
             else
@@ -97,7 +96,7 @@ namespace cfdi.Services
             Thread mailingThread = new Thread(
                 delegate ()
                 {
-                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream, "C:/TOMZA.SYS/cfdi/pdf/reporte.pdf");
+                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream /*, agregarPdf*/);
                 }
             );
             mailingThread.Start();
