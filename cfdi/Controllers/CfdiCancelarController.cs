@@ -33,22 +33,22 @@ namespace cfdi.Controllers
         public IActionResult Post(CFDi cfdi)
         {
             TimbradoService service = new TimbradoService();
+            var results = new Dictionary<string, Object>();
             try
             {
                 cfdi = service.cancelarTimbre(cfdi);
-                return Ok(cfdi);
+                results.Add("cfdi", cfdi);
+                return Ok(results);
             }
-            catch(CancellationException e)
+            catch(Exception e)
             {
-                return BadRequest(e.Message);
-            }
-            catch(InvalidInvoiceStatusException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (WebServiceCommunicationException e)
-            {
-                return BadRequest(e.Message);
+                if(e is CancellationException || e is InvalidInvoiceNumberException || e is WebServiceCommunicationException)
+                {
+                    results.Add("message", e.Message);
+                    return BadRequest(results);
+                }
+                results.Add("message", "Error en el servidor");
+                return BadRequest(results);
             }
         }
 

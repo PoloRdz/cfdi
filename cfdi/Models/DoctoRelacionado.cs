@@ -7,8 +7,10 @@ namespace cfdi.Models
 {
     public class DoctoRelacionado
     {
+        public long idDoctoRelacionado { get; set; }
         public string idDocumento { get; set; }
-        public string modedaDR { get; set; }
+        public long idFactura { get; set; }
+        public string monedaDR { get; set; }
         public string metodoDePagoDR { get; set; }
         public int numParcialidad { get; set; }
         public double impSaldoAnt { get; set; }

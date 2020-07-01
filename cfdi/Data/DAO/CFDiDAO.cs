@@ -30,6 +30,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.nombreReceptor);
             cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.rfcReceptor);
             cmd.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.email);
+            cmd.Parameters.AddWithValue("@PP_TIPO_COMPROBANTE", cfdi.tipoCompra.Substring(0, 1));
             cmd.Parameters.AddWithValue("@PP_USO_CFDI", cfdi.usoCFDi);
             cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.emisor.serie == null ? "" : cfdi.emisor.serie);
             cmd.Parameters.AddWithValue("@PP_K_ESTATUS_FACTURA", guardarConceptos? 1 : 3);
@@ -43,6 +44,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_SUBTOTAL_IVA", 0.0);
             cmd.Parameters.AddWithValue("@PP_TOTAL_IVA", cfdi.totalImp);
             cmd.Parameters.AddWithValue("@PP_TOTAL", cfdi.total);
+            cmd.Parameters.AddWithValue("@PP_SALDO", cfdi.mPago == "PPD" ? cfdi.total : 0.0d);
             cmd.Parameters.AddWithValue("@PP_IMPORTE_LETRA", cfdi.importeLetra);
             cmd.Parameters.AddWithValue("@PP_CADENA_CERTIFICADO_SAT", cfdi.cadenaCertificadoSat == null ? "" : cfdi.cadenaCertificadoSat);
             cmd.Parameters.AddWithValue("@PP_SELLO_DIGITAL_EMISOR", cfdi.selloEmisor == null ? "" : cfdi.selloEmisor);
@@ -59,9 +61,15 @@ namespace cfdi.Data.DAO
                 reader.Close();
                 if (cfdi.folio > 0 && guardarConceptos)
                 {
-                    saveConceptos(cfdi.conceptos, cfdi.idFolio, cmd);
+                    if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
+                        savePagos(cfdi.pagos, cfdi.idFolio, cmd);
                     saveRelacionados(cfdi.relaciones, cfdi.idFolio, cmd);
-                }                    
+                    saveConceptos(cfdi.conceptos, cfdi.idFolio, cmd);
+                    
+                }
+                if (cfdi.folio > 0 && !guardarConceptos && cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null)
+                    foreach (DoctoRelacionado docRelacion in cfdi.pagos.doctoRelacionados)
+                        updateInvoiceBalance(docRelacion, cmd);
                 cmd.Transaction.Commit();
             }
             catch (Exception e)
@@ -77,7 +85,7 @@ namespace cfdi.Data.DAO
             }
         }
 
-        public DoctoRelacionado getDoctoRelacionadoInfo(string folio, string serie)
+        public DoctoRelacionado getDoctoRelacionadoInfo(int folio, string serie)
         {
             DoctoRelacionado docRelacion = new DoctoRelacionado();
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -89,11 +97,28 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_FOLIO", folio);
             SqlDataReader reader = cmd.ExecuteReader();
             if (!reader.HasRows)
-                throw new InvalidInvoiceNumberException("Serie y/o Folio invalidos");
+                throw new InvalidInvoiceNumberException("Factura no existe o no es de pagos parciales o diferidos");
             reader.Read();
             docRelacion.idDocumento = reader.GetValue(0).ToString();
             docRelacion.numParcialidad = int.Parse(reader.GetValue(1).ToString());
+            docRelacion.impSaldoAnt = double.Parse(reader.GetValue(2).ToString());
+            docRelacion.idFactura = int.Parse(reader.GetValue(3).ToString());
+            cnn.Dispose();
+            reader.Close();
             return docRelacion;
+        }
+
+        public void updateInvoiceBalance(DoctoRelacionado docRelacion, SqlCommand cmd)
+        {
+            cmd.CommandText = "PG_UP_SALDO_FACTURA_INFO";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+            /////////////////////////////////////////////////
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", docRelacion.idFactura);
+            cmd.Parameters.AddWithValue("@PP_SALDO", docRelacion.impSaldoInsoluto);
+            cmd.ExecuteNonQuery();
         }
 
         public CFDi getInvoiceInfo(string serie, int folio)
@@ -118,6 +143,8 @@ namespace cfdi.Data.DAO
             cfdi.total = double.Parse(reader.GetValue(3).ToString());
             cfdi.serie = serie;
             cfdi.folio = folio;
+            cnn.Dispose();
+            reader.Close();
             return cfdi;
         }
 
@@ -131,8 +158,9 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_SERIE", serie);
             cmd.Parameters.AddWithValue("@PP_FOLIO", folio);
             cmd.Parameters.AddWithValue("@PP_STATUS_CODE", 0).Direction = ParameterDirection.InputOutput;
-            cmd.ExecuteReader();
+            cmd.ExecuteNonQuery();
             int statusCode = (int)cmd.Parameters["@PP_STATUS_CODE"].Value;
+            cnn.Dispose();
             if (statusCode == 1)
                 return true;
             return false;
@@ -143,11 +171,63 @@ namespace cfdi.Data.DAO
             foreach(Concepto concepto in conceptos)
             {
                 concepto.idConcepto = saveConcepto(concepto, idFactura, cmd);
-                foreach(Impuesto impuesto in concepto.impuestos)
+                if(concepto.impuestos != null && concepto.impuestos.Length > 0)
+                    foreach(Impuesto impuesto in concepto.impuestos)
+                        impuesto.idImpuesto = saveConceptoImpuesto(impuesto, concepto.idConcepto, cmd);
+            }
+        }
+
+        public void savePagos(Pagos pagos, int idFactura, SqlCommand cmd)
+        {
+            cmd.CommandText = "PG_SV_PAGOS_INFO";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+            /////////////////////////////////////////////////
+            cmd.Parameters.AddWithValue("@PP_ID_PAGO", pagos.idPago).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
+            cmd.Parameters.AddWithValue("@PP_FECHA_PAGO", pagos.fechaPago);
+            cmd.Parameters.AddWithValue("@PP_FORMA_PAGO", pagos.formaDePagoP);
+            cmd.Parameters.AddWithValue("@PP_MONEDA", pagos.monedaP);
+            cmd.Parameters.AddWithValue("@PP_MONTO", pagos.monto);
+            cmd.Parameters.AddWithValue("@PP_CUENTA_BENEFICIARIO", pagos.ctaBeneficiario);
+            cmd.Parameters.AddWithValue("@PP_CUENTA_ORDENANTE", pagos.ctaOrdenante);
+            cmd.ExecuteNonQuery();
+            long id = (long)cmd.Parameters["@PP_ID_PAGO"].Value;
+            pagos.idPago = id;
+            if (pagos.idPago > 0)
+            {
+                foreach (DoctoRelacionado docRelacionado in pagos.doctoRelacionados)
                 {
-                    impuesto.idImpuesto = saveConceptoImpuesto(impuesto, concepto.idConcepto, cmd);
+                    saveDoctoRelacionado(docRelacionado, pagos.idPago, cmd);
                 }
             }
+            else throw new Exception("No se ha guardado el complemento de pago");
+        }
+
+        public void saveDoctoRelacionado(DoctoRelacionado docRelacionado, long idPago, SqlCommand cmd)
+        {
+            cmd.CommandText = "PG_SV_DOCTO_REL_INFO";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
+            cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
+            cmd.Parameters.AddWithValue("@PP_K_USUARIO", 0);
+            /////////////////////////////////////////////////
+            cmd.Parameters.AddWithValue("@PP_ID_DOCUMENTO_RELACIONADO", docRelacionado.idDoctoRelacionado).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_ID_PAGO", idPago);
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", docRelacionado.idFactura);
+            cmd.Parameters.AddWithValue("@PP_MONEDA_DR", docRelacionado.monedaDR);
+            cmd.Parameters.AddWithValue("@PP_METODO_PAGO", docRelacionado.metodoDePagoDR);
+            cmd.Parameters.AddWithValue("@PP_NUMERO_PARCIALIDAD", docRelacionado.numParcialidad);
+            cmd.Parameters.AddWithValue("@PP_SALDO_ANTERIOR", docRelacionado.impSaldoAnt);
+            cmd.Parameters.AddWithValue("@PP_IMPORTE_PAGADO", docRelacionado.impPagado);
+            cmd.Parameters.AddWithValue("@PP_SALDO_INSOLUTO", docRelacionado.impSaldoInsoluto);
+            cmd.ExecuteNonQuery();
+            long id = (long)cmd.Parameters["@PP_ID_DOCUMENTO_RELACIONADO"].Value;
+            if (id > 0)
+                docRelacionado.idDoctoRelacionado = id;
+            else throw new Exception("No fue posible guardar el complemento Documento relacionado para esta factura");
         }
 
         public string getCFDIXml(int idFolio)
@@ -270,6 +350,81 @@ namespace cfdi.Data.DAO
                 cnn.Dispose();
                 cmd.Dispose();
             }
+        }
+
+        public int GetCFDisCount()
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FACTURAS_TOTAL", cnn);
+            cmd.Parameters.AddWithValue("@PP_TOTAL_REG", 0).Direction = ParameterDirection.InputOutput;
+            int total = 0;
+            try
+            {
+                cmd.ExecuteNonQuery();
+                total = (int)cmd.Parameters["@PP_TOTAL_REG"].Value;
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
+        public List<CFDi> GetCFDis(int pagina, int rpp)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FACTURAS", cnn);
+            cmd.Parameters.AddWithValue("@PP_NUM_PAGINA", pagina);
+            cmd.Parameters.AddWithValue("@PP_RPP", rpp);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            var facs = new List<CFDi>();
+            try
+            {
+                if (!rdr.HasRows)
+                    throw new NotFoundException("No se han encontrado facturas");
+                while (rdr.Read())
+                {                    
+                    facs.Add(getCFDi(rdr));
+                }
+                return facs;
+            }
+            catch(Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
+        private CFDi getCFDi(SqlDataReader rdr)
+        {
+            var fac = new CFDi();
+            fac.idFolio = rdr.GetInt32(0);
+            fac.serie = rdr.GetValue(1).ToString();
+            fac.folio = rdr.GetInt32(2);
+            fac.estadoFolio = rdr.GetValue(3).ToString();
+            fac.tipoCompra = rdr.GetValue(4).ToString();
+            fac.emisor = new Emisor();
+            fac.emisor.sucursal = rdr.GetValue(5).ToString();
+            fac.emisor.rfcSucursal = rdr.GetValue(6).ToString();
+            fac.receptor = new Receptor();
+            fac.receptor.nombreReceptor = rdr.GetValue(7).ToString();
+            fac.receptor.rfcReceptor = rdr.GetValue(8).ToString();
+            fac.subtotal = double.Parse(rdr.GetValue(9).ToString());
+            fac.totalImp = double.Parse(rdr.GetValue(10).ToString());
+            fac.total = double.Parse(rdr.GetValue(11).ToString());
+            return fac;
         }
     }
 }
