@@ -56,7 +56,8 @@ namespace cfdi.Services
             logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.rfcSucursal + "; Receptor: " + cfdi.receptor.rfcReceptor);
             EmisorDAO emisorDAO = new EmisorDAO();
             CFDiDAO cfdiDAO = new CFDiDAO();
-            if(cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
+            PDFbuilder PDFbuilder = new PDFbuilder();
+            if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
             {
                 getDoctoRelacionados(cfdi.pagos.doctoRelacionados, cfdiDAO);
             }
@@ -74,6 +75,7 @@ namespace cfdi.Services
                 //timbrarFacturaWS(cfdi);
                 //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
+                PDFbuilder.PDFgenerate(cfdi);
                 logger.Info("Cadena original del complemento de certificacion digital del SAT: " + cfdi.cadenaCertificadoSat);
                 sendMail(cfdi);
             }
@@ -118,7 +120,7 @@ namespace cfdi.Services
             Thread mailingThread = new Thread(
                 delegate ()
                 {
-                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream /*, agregarPdf*/);
+                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream, "C:/TOMZA.SYS/cfdi/pdf/reporte.pdf");
                 }
             );
             mailingThread.Start();
