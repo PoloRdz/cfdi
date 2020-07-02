@@ -11,6 +11,7 @@ using cfdi.Models.Auth;
 using cfdi.Utils;
 using cfdi.Exceptions;
 using cfdi.Services;
+using Microsoft.AspNetCore.Cors;
 
 namespace cfdi.Controllers
 {
@@ -38,7 +39,7 @@ namespace cfdi.Controllers
                 if (e is PasswordMismatchException)
                 {
                     results.Add("message", e.Message);
-                    return BadRequest(results);
+                    return Conflict(results);
                 }
                 results.Add("message", "Error en el servidor");
                 return BadRequest(results);

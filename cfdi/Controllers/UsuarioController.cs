@@ -38,7 +38,7 @@ namespace cfdi.Controllers
         }
 
         // GET: api/Usuario/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
             var res = new Dictionary<string, Object>();
