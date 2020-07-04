@@ -1,4 +1,5 @@
 ﻿using cfdi.Exceptions;
+using cfdi.Models;
 using cfdi.Models.Auth;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_SK_USUARIOS_COUNT", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_TOTAL_REG", 0).Direction = ParameterDirection.InputOutput;
-            int total = 0;
+            int total;
             try
             {
                 cmd.ExecuteNonQuery();
@@ -72,21 +73,51 @@ namespace cfdi.Data.DAO
         public Usuario getUsuario(int id)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_SK_USUARIO", cnn);
+            SqlCommand cmd = new SqlCommand("PG_SK_USUARIO_BY_ID", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_USUARIO", id);
             SqlDataReader reader = null;
-            Usuario user = null;
+            Usuario user;
             try
             {
                 reader = cmd.ExecuteReader();
                 if (!reader.HasRows)
-                    throw new NotFoundException("No se ha encontrado el usuario con id: " + id);
+                    throw new NotFoundException("No se ha encontrado el usuario");
                 reader.Read();
                 user = getUsuarioFromReader(reader);
                 return user;
             }
             catch(Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                reader.Close();
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public InformacionFiscal getUsuarioFiscales(int id)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_USUARIO_FISCALES", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", id);
+            SqlDataReader reader = null;
+            InformacionFiscal infoFis = null;
+            try
+            {
+                reader = cmd.ExecuteReader();
+                if (!reader.HasRows)
+                    throw new NotFoundException("No se ha encontrado la información fiscal del usuario");
+                reader.Read();
+                infoFis = getInformacionFiscalFromReader(reader);
+                return infoFis;
+            }
+            catch (Exception e)
             {
                 logger.Error(e, e.Message);
                 throw e;
@@ -197,6 +228,18 @@ namespace cfdi.Data.DAO
             usuario.apellidoM = reader.GetString(5);
             usuario.correo = reader.GetString(6);
             return usuario;
+        }
+
+        private InformacionFiscal getInformacionFiscalFromReader(SqlDataReader rdr)
+        {
+            InformacionFiscal ifu = new InformacionFiscal();
+            ifu.id = rdr.GetInt32(0);
+            ifu.rfc = rdr.GetString(1);
+            ifu.razonSocial = rdr.GetString(2);
+            ifu.direccionFiscal = rdr.GetString(3);
+            ifu.codigoPostal = rdr.GetString(4);
+            ifu.telefono = rdr.GetString(5);
+            return ifu;
         }
     }
 }

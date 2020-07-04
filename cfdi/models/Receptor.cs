@@ -1,4 +1,5 @@
-﻿using System;
+﻿using cfdi.Models.Auth;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +8,7 @@ namespace cfdi.Models
 {
     public class Receptor
     {
-        public string nombreReceptor { get; set; }
-        public string rfcReceptor { get; set; }
-        public string email { get; set; }
+        public Usuario usuario { get; set; }
+        public InformacionFiscal informacionFiscal { get; set; }
     }
 }

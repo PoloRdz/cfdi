@@ -53,16 +53,19 @@ namespace cfdi.Services
 
         private void createCFDI(CFDi cfdi)
         {
-            logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.rfcSucursal + "; Receptor: " + cfdi.receptor.rfcReceptor);
+            logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.unidadOperativa.razonSocial.rfc + "; Receptor: " + cfdi.receptor.informacionFiscal.rfc);
             EmisorDAO emisorDAO = new EmisorDAO();
             CFDiDAO cfdiDAO = new CFDiDAO();
+            UsuarioDAO uDAO = new UsuarioDAO();
             PDFbuilder PDFbuilder = new PDFbuilder();
-            if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
-            {
-                getDoctoRelacionados(cfdi.pagos.doctoRelacionados, cfdiDAO);
-            }
-            cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.rfcSucursal, cfdi.tipoCompra.Substring(0, 1));
-            cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.rfcSucursal);
+            //if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
+            //{
+            //    getDoctoRelacionados(cfdi.pagos.doctoRelacionados, cfdiDAO);
+            //}
+            cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.unidadOperativa.idUnidadOperativa, cfdi.tipoCompra.Substring(0, 1));
+            cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.unidadOperativa.razonSocial.idRazonSocial);
+            cfdi.receptor.usuario = uDAO.getUsuario(cfdi.receptor.usuario.id);
+            cfdi.receptor.informacionFiscal = uDAO.getUsuarioFiscales(cfdi.receptor.usuario.id);
             cfdi.importeLetra = ConvertidorImporte.enletras(cfdi.total, cfdi.moneda);
             cfdi.fechaCert = DateTime.Now;
             cfdiDAO.saveCFDI(cfdi, true);
@@ -120,7 +123,7 @@ namespace cfdi.Services
             Thread mailingThread = new Thread(
                 delegate ()
                 {
-                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.email }, xmlStream, "C:/TOMZA.SYS/cfdi/pdf/reporte.pdf");
+                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.usuario.correo }, xmlStream, "C:/TOMZA.SYS/cfdi/pdf/reporte.pdf");
                 }
             );
             mailingThread.Start();

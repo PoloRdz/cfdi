@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace cfdi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/cfdi/cancelar")]
     [ApiController]
     public class CfdiCancelarController : ControllerBase
     {

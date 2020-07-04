@@ -15,7 +15,7 @@ namespace cfdi.Data.DAO
 {
     public class EmisorDAO
     {
-        public Certificado GetIssuerCertInfo(string rfc)
+        public Certificado GetIssuerCertInfo(int idRazonSocial)
         {
             Certificado cert = new Certificado();
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -23,7 +23,7 @@ namespace cfdi.Data.DAO
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@PP_L_DEBUG", 0);
             command.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
-            command.Parameters.AddWithValue("@PP_RFC_EMISOR", rfc);
+            command.Parameters.AddWithValue("@PP_k_RAZON_SOCIAL", idRazonSocial);
             SqlDataReader reader = command.ExecuteReader(); 
             if (!reader.HasRows)
             {
@@ -39,7 +39,7 @@ namespace cfdi.Data.DAO
             return cert;
         }
 
-        public Emisor GetIssuerInfo(string rfc, string tipoCompra)
+        public Emisor GetIssuerInfo(int idUnidadOp, string tipoCompra)
         {
             Emisor emisor = new Emisor();
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -47,7 +47,7 @@ namespace cfdi.Data.DAO
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@PP_L_DEBUG", 0);
             command.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
-            command.Parameters.AddWithValue("@PP_RFC_EMISOR", rfc);
+            command.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", idUnidadOp);
             command.Parameters.AddWithValue("@PP_TIPO_COMPRA", tipoCompra);
             SqlDataReader reader = command.ExecuteReader();
             if (!reader.HasRows)
@@ -55,11 +55,20 @@ namespace cfdi.Data.DAO
                 throw new InvalidRFCException("RFC proporcionado no es válido o no existe");
             }
             reader.Read();
-            emisor.idSucursal = int.Parse(reader.GetValue(0).ToString());
-            emisor.rfcSucursal = reader.GetValue(1).ToString();
-            emisor.sucursal = reader.GetValue(2).ToString();
-            emisor.regimenFiscal = reader.GetValue(3).ToString();
-            emisor.codigoPostal = reader.GetValue(4).ToString();
+            emisor.unidadOperativa = new UnidadOperativa
+            {
+                codigoPostal = reader.GetValue(4).ToString(),
+                razonSocial = new RazonSocial
+                {
+                    idRazonSocial = int.Parse(reader.GetValue(0).ToString()),
+                    rfc = reader.GetValue(1).ToString(),
+                    razonSocial = reader.GetValue(2).ToString(),
+                    regimenFiscal = new RegimenFiscal
+                    { 
+                        idRegimenFiscal = reader.GetInt32(3)
+                    }
+                }
+            };
             emisor.serie = reader.GetValue(5).ToString();
             cnn.Close();
             return emisor;

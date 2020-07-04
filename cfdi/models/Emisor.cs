@@ -7,11 +7,7 @@ namespace cfdi.Models
 {
     public class Emisor
     {
-        public int idSucursal { get; set; }
-        public string sucursal { get; set; }
-        public string rfcSucursal { get; set; }
-        public string regimenFiscal { get; set; }
-        public string codigoPostal { get; set; }
+        public UnidadOperativa unidadOperativa { get; set; }
         public string serie { get; set; }
         public Certificado certificado { get; set; }
     }

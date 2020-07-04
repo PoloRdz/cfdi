@@ -25,12 +25,12 @@ namespace cfdi.Data.DAO
             //////////////////////////////////////////////////////////////
             cmd.Parameters.AddWithValue("@PP_ID_FACTURA", cfdi.idFolio).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_FOLIO", cfdi.folio).Direction = ParameterDirection.InputOutput;
-            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", cfdi.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", cfdi.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_FOLIO_FISCAL", cfdi.folioFiscal == null? "" : cfdi.folioFiscal);
-            cmd.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.nombreReceptor);
-            cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.rfcReceptor);
-            cmd.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.email);
-            cmd.Parameters.AddWithValue("@PP_TIPO_COMPROBANTE", cfdi.tipoCompra.Substring(0, 1));
+            cmd.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.informacionFiscal.razonSocial);
+            cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.informacionFiscal.rfc);
+            cmd.Parameters.AddWithValue("@PP_EMAIL", cfdi.receptor.usuario.correo);
+            cmd.Parameters.AddWithValue("@PP_TIPO_COMPROBANTE", "I");//cfdi.tipoCompra.Substring(0, 1));
             cmd.Parameters.AddWithValue("@PP_USO_CFDI", cfdi.usoCFDi);
             cmd.Parameters.AddWithValue("@PP_SERIE", cfdi.emisor.serie == null ? "" : cfdi.emisor.serie);
             cmd.Parameters.AddWithValue("@PP_K_ESTATUS_FACTURA", guardarConceptos? 1 : 3);
@@ -418,11 +418,19 @@ namespace cfdi.Data.DAO
             fac.estadoFolio = rdr.GetValue(3).ToString();
             fac.tipoCompra = rdr.GetValue(4).ToString();
             fac.emisor = new Emisor();
-            fac.emisor.sucursal = rdr.GetValue(5).ToString();
-            fac.emisor.rfcSucursal = rdr.GetValue(6).ToString();
-            fac.receptor = new Receptor();
-            fac.receptor.nombreReceptor = rdr.GetValue(7).ToString();
-            fac.receptor.rfcReceptor = rdr.GetValue(8).ToString();
+            fac.emisor.unidadOperativa = new UnidadOperativa();
+            fac.emisor.unidadOperativa.razonSocial = new RazonSocial
+            {
+                razonSocial = rdr.GetValue(5).ToString(),
+                rfc = rdr.GetValue(6).ToString()
+            };
+            fac.receptor = new Receptor {
+                informacionFiscal = new InformacionFiscal
+                {
+                    razonSocial = rdr.GetValue(7).ToString(),
+                    rfc = rdr.GetValue(8).ToString()
+                }
+            };
             fac.subtotal = double.Parse(rdr.GetValue(9).ToString());
             fac.totalImp = double.Parse(rdr.GetValue(10).ToString());
             fac.total = double.Parse(rdr.GetValue(11).ToString());
