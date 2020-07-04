@@ -134,11 +134,24 @@ namespace cfdi.Data.DAO
             SqlDataReader reader = cmd.ExecuteReader();
             if (!reader.HasRows)
                 throw new InvalidInvoiceNumberException("Serie y/o Folio invalidos");
-            cfdi.emisor = new Emisor();
-            cfdi.receptor = new Receptor();
             reader.Read();
-            cfdi.emisor.rfcSucursal = reader.GetValue(0).ToString();
-            cfdi.receptor.rfcReceptor = reader.GetValue(1).ToString();
+            cfdi.emisor = new Emisor 
+            { 
+                unidadOperativa = new UnidadOperativa
+                {
+                    razonSocial = new RazonSocial
+                    {
+                        rfc = reader.GetValue(0).ToString()
+                    }
+                }
+            };
+            cfdi.receptor = new Receptor 
+            { 
+                informacionFiscal = new InformacionFiscal
+                {
+                    rfc = reader.GetValue(1).ToString()
+                }
+            };
             cfdi.folioFiscal = reader.GetValue(2).ToString();
             cfdi.total = double.Parse(reader.GetValue(3).ToString());
             cfdi.serie = serie;

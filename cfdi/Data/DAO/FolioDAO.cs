@@ -106,7 +106,7 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_IN_FOLIO", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_FOLIO", 0).Direction = ParameterDirection.InputOutput;
-            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_FOLIOS", folio.folios);
             try
             {
@@ -136,7 +136,7 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_UP_FOLIO", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_FOLIO", folio.id);
-            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_FOLIOS", folio.folios);
             try
             {
@@ -183,10 +183,18 @@ namespace cfdi.Data.DAO
             Folio folio = new Folio();
             folio.id = rdr.GetInt32(0);
             folio.folios = rdr.GetInt32(1);
-            folio.emisor = new Emisor();
-            folio.emisor.idSucursal = rdr.GetInt32(2);
-            folio.emisor.sucursal = rdr.GetValue(3).ToString();
-            folio.emisor.rfcSucursal = rdr.GetValue(4).ToString();
+            folio.emisor = new Emisor 
+            {
+                unidadOperativa = new UnidadOperativa
+                {
+                    razonSocial = new RazonSocial
+                    {
+                        idRazonSocial = rdr.GetInt32(2),
+                        razonSocial = rdr.GetValue(3).ToString(),
+                        rfc = rdr.GetValue(4).ToString()
+                    }
+                }
+            };
             return folio;
         }
     }

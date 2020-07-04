@@ -106,7 +106,7 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_IN_SERIE", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_SERIE", 0).Direction = ParameterDirection.InputOutput;
-            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", serie.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", serie.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_TIPO_VENTA", serie.tipoVenta);
             cmd.Parameters.AddWithValue("@PP_SERIE", serie.serie);
             try
@@ -137,7 +137,7 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_UP_SERIE", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_SERIE", serie.id);
-            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", serie.emisor.idSucursal);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", serie.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_TIPO_VENTA", serie.tipoVenta);
             cmd.Parameters.AddWithValue("@PP_SERIE", serie.serie);
             try
@@ -187,10 +187,18 @@ namespace cfdi.Data.DAO
             serie.id = rdr.GetInt32(0);
             serie.tipoVenta = rdr.GetValue(1).ToString();
             serie.serie = rdr.GetValue(2).ToString();
-            serie.emisor = new Emisor();
-            serie.emisor.idSucursal = rdr.GetInt32(3);
-            serie.emisor.sucursal = rdr.GetValue(4).ToString();
-            serie.emisor.rfcSucursal = rdr.GetValue(5).ToString();
+            serie.emisor = new Emisor
+            {
+                unidadOperativa = new UnidadOperativa
+                {
+                    razonSocial = new RazonSocial
+                    {
+                        idRazonSocial = rdr.GetInt32(3),
+                        razonSocial = rdr.GetValue(4).ToString(),
+                        rfc = rdr.GetValue(5).ToString()
+                    }
+                }
+            };
             return serie;
         }
     }

@@ -45,14 +45,14 @@ namespace cfdi.Utils
 
             var tb1 = new PdfPTable(new float[] { 30f, 70f }) { WidthPercentage = 100f };
             tb1.AddCell(new PdfPCell(logo) { Padding = 1.5f, Border = 0, Rowspan = 3, HorizontalAlignment = Element.ALIGN_LEFT });
-            tb1.AddCell(new PdfPCell(new Phrase(cfdi.emisor.sucursal, titulo)) { Border = 0 });
-            tb1.AddCell(new PdfPCell(new Phrase("RFC: " + cfdi.emisor.rfcSucursal, parrafo)) { Border = 0 });
+            tb1.AddCell(new PdfPCell(new Phrase(cfdi.emisor.unidadOperativa.razonSocial.razonSocial, titulo)) { Border = 0 });
+            tb1.AddCell(new PdfPCell(new Phrase("RFC: " + cfdi.emisor.unidadOperativa.razonSocial.rfc, parrafo)) { Border = 0 });
             tb1.AddCell(new PdfPCell(new Phrase("Regimen Fiscal: General de Ley Personas Morales", parrafo)) { Border = 0 });
 
             tb1.AddCell(new PdfPCell(new Phrase("CLIENTE", titulo_blanco)) { Padding = 3f, Border = 0, BackgroundColor = new BaseColor(47, 54, 64), HorizontalAlignment = Element.ALIGN_LEFT, VerticalAlignment = Element.ALIGN_MIDDLE });
-            tb1.AddCell(new PdfPCell(new Phrase("LUGAR EXPEDICION: " + cfdi.emisor.codigoPostal, titulo_blanco)) { Padding = 3f, BorderColorLeft = new BaseColor(47, 54, 64), BorderColorBottom = new BaseColor(47, 54, 64), BorderWidthTop = 0, BorderWidthLeft = 100, BorderColorRight = new BaseColor(255, 255, 255), BackgroundColor = new BaseColor(47, 54, 64), HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE });
+            tb1.AddCell(new PdfPCell(new Phrase("LUGAR EXPEDICION: " + cfdi.emisor.unidadOperativa.codigoPostal, titulo_blanco)) { Padding = 3f, BorderColorLeft = new BaseColor(47, 54, 64), BorderColorBottom = new BaseColor(47, 54, 64), BorderWidthTop = 0, BorderWidthLeft = 100, BorderColorRight = new BaseColor(255, 255, 255), BackgroundColor = new BaseColor(47, 54, 64), HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE });
             tb1.AddCell(new PdfPCell(new Phrase("GAS COMERCIAL DE VILLA AHUMADA", parrafo)) { Border = 0, HorizontalAlignment = Element.ALIGN_LEFT, VerticalAlignment = Element.ALIGN_MIDDLE });
-            tb1.AddCell(new PdfPCell(new Phrase("RFC: " + cfdi.receptor.rfcReceptor, parrafo)) { Border = 0, HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE });
+            tb1.AddCell(new PdfPCell(new Phrase("RFC: " + cfdi.receptor.informacionFiscal.rfc, parrafo)) { Border = 0, HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE });
 
             tb1.AddCell(new PdfPCell(new Phrase("")) { Border = 0, HorizontalAlignment = Element.ALIGN_LEFT, VerticalAlignment = Element.ALIGN_MIDDLE });
             tb1.AddCell(new PdfPCell(new Phrase("")) { Border = 0, HorizontalAlignment = Element.ALIGN_CENTER, VerticalAlignment = Element.ALIGN_MIDDLE });
@@ -166,7 +166,7 @@ namespace cfdi.Utils
 
             //CODIGO QR//
             tb1 = new PdfPTable(new float[] { 80f,20f }) { WidthPercentage = 50f, HorizontalAlignment = Element.ALIGN_RIGHT };
-            BarcodeQRCode barcodeQRCode = new BarcodeQRCode("https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?re=" + cfdi.emisor.rfcSucursal + "&rr=" + cfdi.receptor.rfcReceptor + "&tt=" + cfdi.total + "&id=" + cfdi.folioFiscal + "&fe=" + cfdi.selloEmisor.Substring(cfdi.selloEmisor.Length -9, 8), 1000, 1000, null);
+            BarcodeQRCode barcodeQRCode = new BarcodeQRCode("https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?re=" + cfdi.emisor.unidadOperativa.razonSocial.rfc + "&rr=" + cfdi.receptor.informacionFiscal.rfc + "&tt=" + cfdi.total + "&id=" + cfdi.folioFiscal + "&fe=" + cfdi.selloEmisor.Substring(cfdi.selloEmisor.Length -9, 8), 1000, 1000, null);
             Image codeQRImage = barcodeQRCode.GetImage();
             codeQRImage.ScaleAbsolute(60, 60);
 

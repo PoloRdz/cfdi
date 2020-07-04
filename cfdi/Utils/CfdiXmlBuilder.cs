@@ -41,7 +41,7 @@ namespace cfdi.Utils
             nodeComprobante.SetAttribute("TipoDeComprobante", tipoComprobante);
             if (tipoComprobante != "P" && tipoComprobante != "T")
                 nodeComprobante.SetAttribute("MetodoPago", cfdi.mPago); //
-            nodeComprobante.SetAttribute("LugarExpedicion", cfdi.emisor.codigoPostal);
+            nodeComprobante.SetAttribute("LugarExpedicion", cfdi.emisor.unidadOperativa.codigoPostal);
             nodeComprobante.SetAttribute("Moneda", cfdi.moneda);
             if (tipoComprobante != "P")
                 nodeComprobante.SetAttribute("TipoCambio", "1");
@@ -70,15 +70,15 @@ namespace cfdi.Utils
                 }                
             }
             XmlElement nodeEmisor = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Emisor"));
-            nodeEmisor.SetAttribute("Rfc", cfdi.emisor.rfcSucursal);
-            nodeEmisor.SetAttribute("Nombre", cfdi.emisor.sucursal);
-            nodeEmisor.SetAttribute("RegimenFiscal", cfdi.emisor.regimenFiscal);
+            nodeEmisor.SetAttribute("Rfc", cfdi.emisor.unidadOperativa.razonSocial.rfc);
+            nodeEmisor.SetAttribute("Nombre", cfdi.emisor.unidadOperativa.razonSocial.razonSocial);
+            nodeEmisor.SetAttribute("RegimenFiscal", cfdi.emisor.unidadOperativa.razonSocial.regimenFiscal.idRegimenFiscal.ToString());
             XmlElement nodeReceptor = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Receptor"));            
-            nodeReceptor.SetAttribute("Nombre", cfdi.receptor.nombreReceptor);
-            nodeReceptor.SetAttribute("Rfc", cfdi.receptor.rfcReceptor);
+            nodeReceptor.SetAttribute("Nombre", cfdi.receptor.informacionFiscal.razonSocial);
+            nodeReceptor.SetAttribute("Rfc", cfdi.receptor.informacionFiscal.rfc);
             nodeReceptor.SetAttribute("UsoCFDI", cfdi.usoCFDi); 
-            if (cfdi.receptor.email != null && cfdi.receptor.email != "")
-                nodeReceptor.SetAttribute("To", cfdi.receptor.email);
+            if (cfdi.receptor.usuario.correo != null && cfdi.receptor.usuario.correo != "")
+                nodeReceptor.SetAttribute("To", cfdi.receptor.usuario.correo);
             XmlElement nodeConceptos = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("Conceptos"));
             foreach (Concepto concepto in cfdi.conceptos)
             {
@@ -147,7 +147,7 @@ namespace cfdi.Utils
             // Datos Dummy, son requeridos por PAC pero no son procesados ¿¿¿¿¿¿¿¿¿¿¿¿¿¿¿??????????????
             XmlElement nodeDatosVarios = (XmlElement)nodeComprobante.AppendChild(xml.CreateElement("DatosVarios"));
             XmlElement nodeSucursal = (XmlElement)nodeDatosVarios.AppendChild(xml.CreateElement("Sucursal"));
-            nodeSucursal.SetAttribute("texto", cfdi.emisor.sucursal);
+            nodeSucursal.SetAttribute("texto", cfdi.emisor.unidadOperativa.razonSocial.razonSocial);
             XmlElement nodeMsgMedio = (XmlElement)nodeDatosVarios.AppendChild(xml.CreateElement("MsgMedio"));
             nodeMsgMedio.SetAttribute("texto", "FECHA LIMITE DE PAGO");
             XmlElement nodeMsgCorto = (XmlElement)nodeDatosVarios.AppendChild(xml.CreateElement("MsgCorto"));
@@ -161,7 +161,7 @@ namespace cfdi.Utils
             XmlElement nodeMsgCorto2 = (XmlElement)nodeDatosVarios.AppendChild(xml.CreateElement("MsgCorto2"));
             nodeMsgCorto2.SetAttribute("texto", "ESTE RECIBO UNICAMENTE SERA VALIDO COMO PAGO SI PRESENTA EL COMPROBANTE QUE AMPARE EL IMPORTE DEL MISMO EFECTOS FISCALES AL PAGO");
             XmlElement nodeMsgCorto3 = (XmlElement)nodeDatosVarios.AppendChild(xml.CreateElement("MsgCorto3"));
-            nodeMsgCorto3.SetAttribute("texto", "CP: " + cfdi.emisor.codigoPostal);
+            nodeMsgCorto3.SetAttribute("texto", "CP: " + cfdi.emisor.unidadOperativa.codigoPostal);
 
             return xml.OuterXml;
         }
@@ -171,9 +171,9 @@ namespace cfdi.Utils
             XmlDocument xml = new XmlDocument();
             xml.AppendChild(xml.CreateXmlDeclaration("1.0", "UTF-8", null));
             XmlElement nodeCancelacion = (XmlElement)xml.AppendChild(xml.CreateElement("Cancelacion"));
-            nodeCancelacion.SetAttribute("RfcEmisor", cfdi.emisor.rfcSucursal);
+            nodeCancelacion.SetAttribute("RfcEmisor", cfdi.emisor.unidadOperativa.razonSocial.rfc);
             nodeCancelacion.SetAttribute("Fecha", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss"));
-            nodeCancelacion.SetAttribute("RfcReceptor", cfdi.receptor.rfcReceptor);
+            nodeCancelacion.SetAttribute("RfcReceptor", cfdi.receptor.informacionFiscal.rfc);
             nodeCancelacion.SetAttribute("Total", cfdi.total.ToString("F2"));
             XmlElement nodeFolios = (XmlElement)nodeCancelacion.AppendChild(xml.CreateElement("Folios"));
             XmlElement nodeUUID = (XmlElement)nodeFolios.AppendChild(xml.CreateElement("UUID"));
