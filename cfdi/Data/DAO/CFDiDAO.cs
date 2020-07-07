@@ -37,14 +37,14 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_FECHA_CERTIFICACION", cfdi.fechaCert);
             cmd.Parameters.AddWithValue("@PP_FECHA_EMISION", cfdi.fecha);
             cmd.Parameters.AddWithValue("@PP_NO_CERTIFICADO_SAT", cfdi.NoCertificadoSat == null ? "" : cfdi.NoCertificadoSat);
-            cmd.Parameters.AddWithValue("@PP_FORMA_PAGO", cfdi.formaPago);
+            cmd.Parameters.AddWithValue("@PP_FORMA_PAGO", "99");//cfdi.formaPago);
             cmd.Parameters.AddWithValue("@PP_NO_CERTIFICADO_EMISOR", cfdi.NoCertificadoEmisor == null ? "" : cfdi.NoCertificadoEmisor);
-            cmd.Parameters.AddWithValue("@PP_METODO_PAGO", cfdi.mPago);
+            cmd.Parameters.AddWithValue("@PP_METODO_PAGO", "PUE");//cfdi.mPago);
             cmd.Parameters.AddWithValue("@PP_SUB_TOTAL", cfdi.subtotal);
             cmd.Parameters.AddWithValue("@PP_SUBTOTAL_IVA", 0.0);
             cmd.Parameters.AddWithValue("@PP_TOTAL_IVA", cfdi.totalImp);
             cmd.Parameters.AddWithValue("@PP_TOTAL", cfdi.total);
-            cmd.Parameters.AddWithValue("@PP_SALDO", cfdi.mPago == "PPD" ? cfdi.total : 0.0d);
+            cmd.Parameters.AddWithValue("@PP_SALDO", 0.0d); //cfdi.mPago == "PPD" ? cfdi.total : 0.0d);
             cmd.Parameters.AddWithValue("@PP_IMPORTE_LETRA", cfdi.importeLetra);
             cmd.Parameters.AddWithValue("@PP_CADENA_CERTIFICADO_SAT", cfdi.cadenaCertificadoSat == null ? "" : cfdi.cadenaCertificadoSat);
             cmd.Parameters.AddWithValue("@PP_SELLO_DIGITAL_EMISOR", cfdi.selloEmisor == null ? "" : cfdi.selloEmisor);
@@ -179,12 +179,12 @@ namespace cfdi.Data.DAO
             return false;
         }
 
-        public void saveConceptos(Concepto[] conceptos, int idFactura, SqlCommand cmd)
+        public void saveConceptos(List<Concepto> conceptos, int idFactura, SqlCommand cmd)
         {
             foreach(Concepto concepto in conceptos)
             {
                 concepto.idConcepto = saveConcepto(concepto, idFactura, cmd);
-                if(concepto.impuestos != null && concepto.impuestos.Length > 0)
+                if(concepto.impuestos != null && concepto.impuestos.Count > 0)
                     foreach(Impuesto impuesto in concepto.impuestos)
                         impuesto.idImpuesto = saveConceptoImpuesto(impuesto, concepto.idConcepto, cmd);
             }
@@ -273,6 +273,7 @@ namespace cfdi.Data.DAO
             /////////////////////////////////////////////////
             cmd.Parameters.AddWithValue("@PP_ID_CONCEPTO", concepto.idConcepto).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
+            cmd.Parameters.AddWithValue("@PP_ID_REMISION", concepto.idRemision);
             cmd.Parameters.AddWithValue("@PP_CLAVE_PROD_SERV", concepto.claveProdServ);
             cmd.Parameters.AddWithValue("@PP_N_IDENTIFICACION", concepto.noIdentificacion);
             cmd.Parameters.AddWithValue("@PP_CLAVE_UNIDAD", concepto.claveUnidad);

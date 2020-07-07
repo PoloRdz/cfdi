@@ -47,15 +47,16 @@ namespace cfdi.Data.DAO
         private Concepto getConceptoFromReader(SqlDataReader rdr)
         {
             Concepto concepto = new Concepto();
-            concepto.claveProdServ = rdr.GetString(0);
-            concepto.noIdentificacion = rdr.GetString(1);
-            concepto.cantidad = double.Parse(rdr.GetValue(2).ToString());
-            concepto.claveUnidad = rdr.GetString(3);
-            concepto.unidad = rdr.GetString(4);
-            concepto.descripcion = rdr.GetString(5);
-            concepto.valorUnitario = double.Parse(rdr.GetValue(6).ToString());
-            concepto.importe = double.Parse(rdr.GetValue(7).ToString());
-            concepto.descuento = double.Parse(rdr.GetValue(8).ToString());
+            concepto.idRemision = rdr.GetInt32(0);
+            concepto.unidad = rdr.GetString(1);
+            concepto.claveUnidad = rdr.GetString(2);
+            concepto.descripcion = rdr.GetString(3);
+            concepto.claveProdServ = rdr.GetString(4);
+            concepto.noIdentificacion = rdr.GetString(5);
+            concepto.cantidad = double.Parse(rdr.GetValue(6).ToString());
+            concepto.valorUnitario = double.Parse(rdr.GetValue(7).ToString());
+            concepto.importe = double.Parse(rdr.GetValue(8).ToString());
+            concepto.descuento = double.Parse(rdr.GetValue(9).ToString());
             return concepto;
         }
     }

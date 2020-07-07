@@ -57,19 +57,21 @@ namespace cfdi.Data.DAO
             reader.Read();
             emisor.unidadOperativa = new UnidadOperativa
             {
-                codigoPostal = reader.GetValue(4).ToString(),
-                razonSocial = new RazonSocial
+                idUnidadOperativa = reader.GetInt32(0),
+                codigoPostal = reader.GetValue(5).ToString(),
+                impAplicables = double.Parse(reader.GetValue(7).ToString()),
+                razonSocial = new RazonSocial                
                 {
-                    idRazonSocial = int.Parse(reader.GetValue(0).ToString()),
-                    rfc = reader.GetValue(1).ToString(),
-                    razonSocial = reader.GetValue(2).ToString(),
+                    idRazonSocial = int.Parse(reader.GetValue(1).ToString()),
+                    rfc = reader.GetValue(2).ToString(),
+                    razonSocial = reader.GetValue(3).ToString(),
                     regimenFiscal = new RegimenFiscal
                     { 
-                        idRegimenFiscal = reader.GetInt32(3)
+                        idRegimenFiscal = reader.GetInt32(4)
                     }
                 }
             };
-            emisor.serie = reader.GetValue(5).ToString();
+            emisor.serie = reader.GetValue(6).ToString();
             cnn.Close();
             return emisor;
         }

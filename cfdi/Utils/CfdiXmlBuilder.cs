@@ -91,7 +91,9 @@ namespace cfdi.Utils
                 nodeConcepto.SetAttribute("Cantidad", concepto.cantidad.ToString("F6"));
                 nodeConcepto.SetAttribute("ValorUnitario", concepto.valorUnitario.ToString("F6"));
                 nodeConcepto.SetAttribute("Importe", concepto.importe.ToString("F2"));
-                if (concepto.impuestos != null && concepto.impuestos.Length > 0)
+                if (concepto.descuento > 0)
+                    nodeConcepto.SetAttribute("Descuento", concepto.descuento.ToString("F2"));
+                if (concepto.impuestos != null && concepto.impuestos.Count > 0)
                 {
                     XmlElement nodeConceptoImpuestos = (XmlElement)nodeConcepto.AppendChild(xml.CreateElement("Impuestos"));
                     foreach (Impuesto impuesto in concepto.impuestos)
@@ -191,7 +193,7 @@ namespace cfdi.Utils
             node.SetAttribute("Importe", impuesto.importe.ToString("F2"));
         }
 
-        private void calculateTotalTaxes(Concepto[] conceptos, XmlElement nodeImpuestos, XmlDocument xml)
+        private void calculateTotalTaxes(List<Concepto> conceptos, XmlElement nodeImpuestos, XmlDocument xml)
         {
             this.totalRetenciones = 0.0D;
             this.totalTraslados = 0.0D;

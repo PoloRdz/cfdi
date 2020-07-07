@@ -39,8 +39,8 @@ namespace cfdi.Utils
 
             //-------------//
 
-            iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance("C:/TOMZA.SYS/CERTIFICADOS_ERP/GASOMATICO S.A. DE C.V/logo_GAS710629HU3.jpg");
-            //iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(cfdi.emisor.certificado.rutaCert + "\\logo_" + cfdi.emisor.rfcSucursal + ".jpg");
+            //iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance("C:/TOMZA.SYS/CERTIFICADOS_ERP/GASOMATICO S.A. DE C.V/logo_GAS710629HU3.jpg");
+            iTextSharp.text.Image logo = iTextSharp.text.Image.GetInstance(cfdi.emisor.certificado.rutaCert + "\\logo_" + cfdi.emisor.unidadOperativa.razonSocial.rfc + ".jpg");
             logo.ScaleAbsolute(90, 45);
 
             var tb1 = new PdfPTable(new float[] { 30f, 70f }) { WidthPercentage = 100f };

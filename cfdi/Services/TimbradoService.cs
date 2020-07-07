@@ -22,6 +22,7 @@ namespace cfdi.Services
 
         public void Timbrar(CFDi cfdi)
         {
+            cfdi.mPago = "PUE";
             if(cfdi.emisor.serie != null && cfdi.emisor.serie != "" && cfdi.folio > 0 && cfdi.idFolio > 0)
             {
                 validateCFDI(cfdi);
@@ -53,19 +54,26 @@ namespace cfdi.Services
 
         private void createCFDI(CFDi cfdi)
         {
-            logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.unidadOperativa.razonSocial.rfc + "; Receptor: " + cfdi.receptor.informacionFiscal.rfc);
+            //logger.Info("Proceso de timbrado iniciado. Emisor: " + cfdi.emisor.unidadOperativa.razonSocial.rfc + "; Receptor: " + cfdi.receptor.informacionFiscal.rfc);
             EmisorDAO emisorDAO = new EmisorDAO();
+            ConceptosDAO conDAO = new ConceptosDAO();
             CFDiDAO cfdiDAO = new CFDiDAO();
             UsuarioDAO uDAO = new UsuarioDAO();
             PDFbuilder PDFbuilder = new PDFbuilder();
+            Calculador calc = new Calculador();
             //if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
             //{
             //    getDoctoRelacionados(cfdi.pagos.doctoRelacionados, cfdiDAO);
             //}
-            cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.unidadOperativa.idUnidadOperativa, cfdi.tipoCompra.Substring(0, 1));
+            cfdi.emisor = emisorDAO.GetIssuerInfo(cfdi.emisor.unidadOperativa.idUnidadOperativa,
+                                                  cfdi.tipoCompra.Substring(0, 1));
             cfdi.emisor.certificado = emisorDAO.GetIssuerCertInfo(cfdi.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cfdi.receptor.usuario = uDAO.getUsuario(cfdi.receptor.usuario.id);
             cfdi.receptor.informacionFiscal = uDAO.getUsuarioFiscales(cfdi.receptor.usuario.id);
+            cfdi.conceptos = conDAO.getConceptos(cfdi.idMov, cfdi.emisor.unidadOperativa.idUnidadOperativa);
+            calc.calcularDescuentosConceptos(cfdi.conceptos);
+            calc.calcularImpuestoConceptos(cfdi.conceptos, cfdi.emisor.unidadOperativa);
+            calc.calcularTotal(cfdi);
             cfdi.importeLetra = ConvertidorImporte.enletras(cfdi.total, cfdi.moneda);
             cfdi.fechaCert = DateTime.Now;
             cfdiDAO.saveCFDI(cfdi, true);

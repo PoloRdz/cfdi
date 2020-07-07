@@ -8,6 +8,7 @@ namespace cfdi.Models
     public class Concepto
     {
         public int idConcepto { get; set; }
+        public int idRemision { get; set; }
         public string claveProdServ { get; set; } // requerido
         public string noIdentificacion { get; set; } // opcional
         public double cantidad { get; set; } // requerido
@@ -17,6 +18,6 @@ namespace cfdi.Models
         public double valorUnitario { get; set; } // requerido
         public double importe { get; set; } // requerido
         public double descuento { get; set; } // opcional
-        public Impuesto[] impuestos { get; set; }
+        public List<Impuesto> impuestos { get; set; }
     }
 }
