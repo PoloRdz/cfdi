@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ZonaController : ControllerBase
     {
         // GET: api/Zona

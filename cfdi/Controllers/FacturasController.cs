@@ -49,5 +49,27 @@ namespace cfdi.Controllers
         public void Post([FromBody] string value)
         {
         }
+
+        [HttpGet("mis-facturas/{id}")]
+        public IActionResult GetMisFacturas(int id, int pagina, int rpp)
+        {
+            var res = new Dictionary<string, Object>();
+            var serv = new CFDiService();
+            try
+            {
+                res = serv.GetMisFacturas(id, pagina, rpp);
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                if (e is NotFoundException)
+                {
+                    res.Add("message", e.Message);
+                    return NotFound(res);
+                }
+                res.Add("message", "Error en el servidor");
+                return BadRequest(res);
+            }
+        }
     }
 }

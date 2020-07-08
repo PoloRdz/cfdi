@@ -71,6 +71,7 @@ namespace cfdi.Services
             cfdi.receptor.usuario = uDAO.getUsuario(cfdi.receptor.usuario.id);
             cfdi.receptor.informacionFiscal = uDAO.getUsuarioFiscales(cfdi.receptor.usuario.id);
             cfdi.conceptos = conDAO.getConceptos(cfdi.idMov, cfdi.emisor.unidadOperativa.idUnidadOperativa);
+            //Validar si los conceptos no han sido facturados
             calc.calcularDescuentosConceptos(cfdi.conceptos);
             calc.calcularImpuestoConceptos(cfdi.conceptos, cfdi.emisor.unidadOperativa);
             calc.calcularTotal(cfdi);
@@ -81,7 +82,7 @@ namespace cfdi.Services
             {
                 CfdiXmlBuilder xmlBuilder = new CfdiXmlBuilder();
                 cfdi.xml = xmlBuilder.BuildXml(cfdi);
-                var timbreRespuesta = new respuestaTimbrado();
+
                 cfdiDAO.saveCFDI(cfdi, false);
                 //timbrarFacturaWS(cfdi);
                 //xmlBuilder.obtenerDatosTimbre(cfdi);

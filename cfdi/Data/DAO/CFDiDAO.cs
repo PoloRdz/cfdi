@@ -423,6 +423,65 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public List<CFDi> GetMisFacturas(int userId, int pagina, int rpp)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_MIS_FACTURAS", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", userId);
+            cmd.Parameters.AddWithValue("@PP_NUM_PAGINA", pagina);
+            cmd.Parameters.AddWithValue("@PP_RPP", rpp);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            var facs = new List<CFDi>();
+            try
+            {
+                if (!rdr.HasRows)
+                    throw new NotFoundException("No se han encontrado facturas");
+                while (rdr.Read())
+                {
+                    facs.Add(getCFDiFromReader(rdr));
+                }
+                return facs;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
+        public int GetMisFacturasCount(int userId)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_MIS_FACTURAS_TOTAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_TOTAL_REG", 0).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", userId);
+            int total = 0;
+            try
+            {
+                cmd.ExecuteNonQuery();
+                total = (int)cmd.Parameters["@PP_TOTAL_REG"].Value;
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
         private CFDi getCFDiFromReader(SqlDataReader rdr)
         {
             var fac = new CFDi();

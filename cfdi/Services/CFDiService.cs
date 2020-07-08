@@ -20,5 +20,14 @@ namespace cfdi.Services
             return res;
         }
 
+        public Dictionary<string, Object> GetMisFacturas(int userId, int pagina, int totalPag)
+        {
+            CFDiDAO facDAO = new CFDiDAO();
+            var res = new Dictionary<string, Object>();
+            res.Add("cfdis", facDAO.GetMisFacturas(userId, pagina, totalPag));
+            res.Add("total", facDAO.GetMisFacturasCount(userId));
+            return res;
+        }
+
     }
 }
