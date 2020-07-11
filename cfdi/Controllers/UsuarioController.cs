@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Models.Auth;
 using cfdi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace cfdi.Controllers
     {
         // GET: api/Usuario
         [HttpGet]
+        [Authorize]
         public IActionResult Get(int page, int rpp)
         {
             var res = new Dictionary<string, Object>();
@@ -39,6 +41,7 @@ namespace cfdi.Controllers
 
         // GET: api/Usuario/5
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult Get(int id)
         {
             var res = new Dictionary<string, Object>();
@@ -73,10 +76,10 @@ namespace cfdi.Controllers
             }
             catch (Exception e)
             {
-                if (e is NotFoundException)
+                if (e is DuplicateUsernameException)
                 {
                     res.Add("message", e.Message);
-                    return NotFound(res);
+                    return Conflict(res);
                 }
                 res.Add("message", "Error en el servidor");
                 return BadRequest(res);
@@ -85,6 +88,7 @@ namespace cfdi.Controllers
 
         // PUT: api/Usuario/5
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Put(int id, Usuario usuario)
         {
             var res = new Dictionary<string, Object>();
@@ -109,6 +113,7 @@ namespace cfdi.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult Delete(int id)
         {
             var res = new Dictionary<string, Object>();

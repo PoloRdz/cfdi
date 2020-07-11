@@ -1,8 +1,12 @@
 ﻿using cfdi.Data.DAO;
+using cfdi.Exceptions;
+using cfdi.Models;
 using cfdi.Models.Auth;
+using cfdi.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace cfdi.Services
@@ -20,10 +24,24 @@ namespace cfdi.Services
             return res;
         }
 
+        public InformacionFiscal getInformacionFiscal(int idUsuario)
+        {
+            var infoFis = new InformacionFiscal();
+            var uDAO = new UsuarioDAO();
+            infoFis = uDAO.getUsuarioFiscales(idUsuario);
+            return infoFis;
+        }
+
         public Usuario insertUsuario(Usuario usuario)
         {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
+            if (usuarioDAO.buscarNombreUsuario(usuario.usuario))
+                throw new DuplicateUsernameException("El nombre de usuario ya existe");
+            if (usuarioDAO.buscarCorreo(usuario.correo))
+                throw new DuplicateUsernameException("El correo ya existe");
+            usuario.password = PasswordHasher.Hash(usuario.password);
             usuario = usuarioDAO.insertUsuario(usuario);
+            usuario.password = "******";
             return usuario;
         }
 
@@ -44,6 +62,14 @@ namespace cfdi.Services
         {
             UsuarioDAO usuarioDAO = new UsuarioDAO();
             usuarioDAO.deleteUsuario(id);
+        }
+
+        public InformacionFiscal insertInformacionFiscal(int idUsuario, InformacionFiscal infoFis)
+        {
+            UsuarioDAO uDAO = new UsuarioDAO();
+            if (infoFis.id == 0 && uDAO.buscarRFC(infoFis.rfc))
+                throw new DuplicateRFCException("El RFC ingresado ya existe");
+            return uDAO.insertInformacionFiscal(idUsuario, infoFis);
         }
     }
 }

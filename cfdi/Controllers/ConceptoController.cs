@@ -5,32 +5,32 @@ using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class ZonaController : ControllerBase
+    public class ConceptoController : ControllerBase
     {
-        // GET: api/Zona
-        [HttpGet]
-        public IActionResult Get()
+
+        // GET api/<ConceptoController>/5
+        [HttpGet("factura/{id}")]
+        public IActionResult GetConceptosFacturas(int id)
         {
-            ZonaService zser = new ZonaService();
             var res = new Dictionary<string, Object>();
+            var conceptoServce = new ConceptoService();
             try
             {
-                res = zser.getZonas();
+                res = conceptoServce.GetConceptosFactura(id);
                 return Ok(res);
-                //res.Add("message", "No se han encontrado zonas");
-                //return NotFound(res);
             }
             catch (Exception e)
             {
-                if(e is NotFoundException)
+                if (e is NotFoundException)
                 {
                     res.Add("message", e.Message);
                     return NotFound(res);
@@ -38,29 +38,35 @@ namespace cfdi.Controllers
                 res.Add("message", "Error en el servidor");
                 return BadRequest(res);
             }
-            
         }
 
-        //// GET: api/Zona/5
-        //[HttpGet("{id}", Name = "Get")]
+        //// GET: api/<ConceptoController>
+        //[HttpGet]
+        //public IEnumerable<string> Get()
+        //{
+        //    return new string[] { "value1", "value2" };
+        //}
+
+        //// GET api/<ConceptoController>/5
+        //[HttpGet("{id}")]
         //public string Get(int id)
         //{
         //    return "value";
         //}
 
-        //// POST: api/Zona
+        //// POST api/<ConceptoController>
         //[HttpPost]
         //public void Post([FromBody] string value)
         //{
         //}
 
-        //// PUT: api/Zona/5
+        //// PUT api/<ConceptoController>/5
         //[HttpPut("{id}")]
         //public void Put(int id, [FromBody] string value)
         //{
         //}
 
-        //// DELETE: api/ApiWithActions/5
+        //// DELETE api/<ConceptoController>/5
         //[HttpDelete("{id}")]
         //public void Delete(int id)
         //{

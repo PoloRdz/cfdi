@@ -22,14 +22,27 @@ namespace cfdi.Services
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
             
-            UserDAO userDAO = new UserDAO();
+            UsuarioDAO userDAO = new UsuarioDAO();
             usuario = userDAO.GetUsuario(user.usuario, user.password);
             if (!PasswordHasher.Verify(user.password, usuario.password))
                 throw new PasswordMismatchException("La contraseña es incorrecta");
+            usuario.password = "*****";
             token = JWT.createToken(usuario, claims);
             dic.Add("usuario", usuario);
             dic.Add("token", token);
             return dic;
+        }
+
+        public void cambiarContraseña(string username, string contrasena, string contrasenaNueva)
+        {
+            if (username.Trim() == contrasenaNueva.Trim())
+                throw new UnchangedPasswordException("La contraseña nueva no puede se igual a la contraseña actual");
+            UsuarioDAO userDAO = new UsuarioDAO();
+            contrasenaNueva = PasswordHasher.Hash(contrasenaNueva);
+            var usuario = userDAO.GetUsuario(username, contrasena);
+            if (!PasswordHasher.Verify(contrasena, usuario.password))
+                throw new PasswordMismatchException("La contraseña es incorrecta");
+            userDAO.actualizarContrasena(usuario.id, contrasenaNueva);
         }
     }
 }

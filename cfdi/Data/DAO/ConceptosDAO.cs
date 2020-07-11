@@ -44,6 +44,36 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public List<Concepto> GetConceptosFatcura(int idFactura)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_CONCEPTOS_FACTURA", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
+            SqlDataReader rdr = null;
+            var conceptos = new List<Concepto>();
+            try
+            {
+                rdr = cmd.ExecuteReader();
+                if (!rdr.HasRows)
+                    throw new NotFoundException("No se encontraron conceptos para esta factura");
+                while (rdr.Read())
+                    conceptos.Add(getConceptoFromReader(rdr));
+                return conceptos;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         private Concepto getConceptoFromReader(SqlDataReader rdr)
         {
             Concepto concepto = new Concepto();

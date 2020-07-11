@@ -12,6 +12,7 @@ using cfdi.Utils;
 using cfdi.Exceptions;
 using cfdi.Services;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace cfdi.Controllers
 {
@@ -29,13 +30,13 @@ namespace cfdi.Controllers
                 results = authService.authenticateUser(user);
                 return Ok(results);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (e is NotFoundException)
                 {
                     results.Add("message", e.Message);
                     return NotFound(results);
-                }                   
+                }
                 if (e is PasswordMismatchException)
                 {
                     results.Add("message", e.Message);
@@ -46,5 +47,32 @@ namespace cfdi.Controllers
             }
         }
 
+        [HttpPut("cambiar-contrasena/{username}")]
+        [Authorize]
+        public IActionResult CambiarContraseña(string username, [FromForm]string password, [FromForm]string newPassword)
+        {
+            var results = new Dictionary<string, Object>();
+            try
+            {
+                var authService = new AuthService();
+                authService.cambiarContraseña(username, password, newPassword);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                if (e is NotFoundException)
+                {
+                    results.Add("message", e.Message);
+                    return NotFound(results);
+                }
+                if (e is PasswordMismatchException || e is UnchangedPasswordException)
+                {
+                    results.Add("message", e.Message);
+                    return Conflict(results);
+                }
+                results.Add("message", "Error en el servidor");
+                return BadRequest(results);
+            }
+        }
     }
 }

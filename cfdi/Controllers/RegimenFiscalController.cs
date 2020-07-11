@@ -5,32 +5,26 @@ using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace cfdi.Controllers
 {
-    [Route("api/unidad-operativa")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class UnidadOperativaController : ControllerBase
+    public class RegimenFiscalController : ControllerBase
     {
-        // GET: api/UnidadOperativa
+        // GET: api/<RegimenFiscalController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/UnidadOperativa
-        [HttpGet("zona/{id}")]
-        public IActionResult GetFromZona(int id)
-        {
-            var res = new Dictionary<string, object>();
+            var res = new Dictionary<string, Object>();
+            var rfServ = new RegimenFiscalService();
             try
             {
-                UnidadOperativaService uoSrv = new UnidadOperativaService();
-                res = uoSrv.getUnidadesOperativasPorZona(id);
+                res = rfServ.GetRegimenesFiscales();
                 return Ok(res);
             }
             catch(Exception e)
@@ -43,29 +37,28 @@ namespace cfdi.Controllers
                 res.Add("message", "Error en el servidor");
                 return BadRequest(res);
             }
-
         }
 
-        // GET: api/UnidadOperativa/5
+        // GET api/<RegimenFiscalController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
         }
 
-        // POST: api/UnidadOperativa
+        // POST api/<RegimenFiscalController>
         [HttpPost]
         public void Post([FromBody] string value)
         {
         }
 
-        // PUT: api/UnidadOperativa/5
+        // PUT api/<RegimenFiscalController>/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
         }
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE api/<RegimenFiscalController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {

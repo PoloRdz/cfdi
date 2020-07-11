@@ -436,12 +436,43 @@ namespace cfdi.Data.DAO
             try
             {
                 if (!rdr.HasRows)
-                    throw new NotFoundException("No se han encontrado facturas");
+                    throw new NotFoundException("No se ha encontrado la factura");
                 while (rdr.Read())
                 {
                     facs.Add(getCFDiFromReader(rdr));
                 }
                 return facs;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
+        public CFDi GetFactura(int idFactura)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FACTURA_DETALLE", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
+            SqlDataReader rdr = cmd.ExecuteReader();
+            var fac = new CFDi();
+            try
+            {
+                if (!rdr.HasRows)
+                    throw new NotFoundException("No se han encontrado facturas");
+                while (rdr.Read())
+                {
+                    fac = getCFDiFromReader(rdr);
+                }
+                return fac;
             }
             catch (Exception e)
             {
@@ -507,6 +538,10 @@ namespace cfdi.Data.DAO
             fac.subtotal = double.Parse(rdr.GetValue(9).ToString());
             fac.totalImp = double.Parse(rdr.GetValue(10).ToString());
             fac.total = double.Parse(rdr.GetValue(11).ToString());
+            fac.folioFiscal = rdr.GetString(12);
+            fac.fechaCert = rdr.GetDateTime(13);
+            fac.fecha = rdr.GetDateTime(14);
+            fac.NoCertificadoEmisor = rdr.GetString(15);
             return fac;
         }
     }

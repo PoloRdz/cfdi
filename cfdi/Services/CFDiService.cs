@@ -29,5 +29,13 @@ namespace cfdi.Services
             return res;
         }
 
+        public Dictionary<string, Object> GetFactura(int idFactura)
+        {
+            CFDiDAO facDAO = new CFDiDAO();
+            var res = new Dictionary<string, Object>();
+            res.Add("cfdi", facDAO.GetFactura(idFactura));
+            return res;
+        }
+
     }
 }
