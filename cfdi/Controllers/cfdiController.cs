@@ -51,7 +51,7 @@ namespace cfdi.Controllers
                 }
                 logger.Error(e.Message);
                 results.Add("message", "Error en el servidor");
-                return BadRequest(results);
+                return StatusCode(500, results);
             }
 
         }
