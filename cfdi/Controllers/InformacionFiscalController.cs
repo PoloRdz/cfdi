@@ -44,7 +44,7 @@ namespace cfdi.Controllers
                     return NotFound(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 
@@ -67,7 +67,7 @@ namespace cfdi.Controllers
                     return Conflict(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 

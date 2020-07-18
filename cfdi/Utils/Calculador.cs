@@ -33,9 +33,9 @@ namespace cfdi.Utils
         {
             Impuesto impuesto = new Impuesto
             {
-                tipo = "002",
+                tipo = "RET",
                 precioBase = concepto.importe,
-                impuesto = "RET",
+                impuesto = "002",
                 tipoFactor = "Tasa",
                 tasaOCuota = uo.impAplicables,
                 importe = concepto.importe * uo.impAplicables

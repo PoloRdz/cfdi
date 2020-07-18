@@ -26,6 +26,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_ID_FACTURA", cfdi.idFolio).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_FOLIO", cfdi.folio).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", cfdi.emisor.unidadOperativa.razonSocial.idRazonSocial);
+            cmd.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", cfdi.emisor.unidadOperativa.idUnidadOperativa);
             cmd.Parameters.AddWithValue("@PP_FOLIO_FISCAL", cfdi.folioFiscal == null? "" : cfdi.folioFiscal);
             cmd.Parameters.AddWithValue("@PP_NOMBRE_RECEPTOR", cfdi.receptor.informacionFiscal.razonSocial);
             cmd.Parameters.AddWithValue("@PP_RFC_RECEPTOR", cfdi.receptor.informacionFiscal.rfc);
@@ -274,6 +275,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_ID_CONCEPTO", concepto.idConcepto).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_ID_FACTURA", idFactura);
             cmd.Parameters.AddWithValue("@PP_ID_REMISION", concepto.idRemision);
+            cmd.Parameters.AddWithValue("@PP_ID_LINKED_SERVER", concepto.idLinkedServer);
             cmd.Parameters.AddWithValue("@PP_CLAVE_PROD_SERV", concepto.claveProdServ);
             cmd.Parameters.AddWithValue("@PP_N_IDENTIFICACION", concepto.noIdentificacion);
             cmd.Parameters.AddWithValue("@PP_CLAVE_UNIDAD", concepto.claveUnidad);

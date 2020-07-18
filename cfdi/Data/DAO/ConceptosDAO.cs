@@ -78,15 +78,20 @@ namespace cfdi.Data.DAO
         {
             Concepto concepto = new Concepto();
             concepto.idRemision = rdr.GetInt32(0);
-            concepto.unidad = rdr.GetString(1);
-            concepto.claveUnidad = rdr.GetString(2);
-            concepto.descripcion = rdr.GetString(3);
-            concepto.claveProdServ = rdr.GetString(4);
-            concepto.noIdentificacion = rdr.GetString(5);
-            concepto.cantidad = double.Parse(rdr.GetValue(6).ToString());
-            concepto.valorUnitario = double.Parse(rdr.GetValue(7).ToString());
-            concepto.importe = double.Parse(rdr.GetValue(8).ToString());
-            concepto.descuento = double.Parse(rdr.GetValue(9).ToString());
+            concepto.idLinkedServer = rdr.GetInt32(1);   
+            concepto.unidad = rdr.GetString(2);
+            concepto.claveUnidad = rdr.GetString(3);
+            concepto.descripcion = rdr.GetString(4);
+            concepto.claveProdServ = rdr.GetString(5);
+            concepto.noIdentificacion = rdr.GetString(6);
+            concepto.cantidad = double.Parse(rdr.GetValue(7).ToString());
+            concepto.valorUnitario = double.Parse(rdr.GetValue(8).ToString());
+            concepto.importe = double.Parse(rdr.GetValue(9).ToString());
+            concepto.descuento = double.Parse(rdr.GetValue(10).ToString());
+            try
+            {
+                concepto.fecha = rdr.GetDateTime(11);
+            }catch{}
             return concepto;
         }
     }

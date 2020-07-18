@@ -1,5 +1,6 @@
 ﻿using cfdi.Exceptions;
 using cfdi.Models;
+using cfdi.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -178,23 +179,99 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public List<FolioUnidadOperativaDTO> getFoliosUnidadOperativa(int idRazonSocial)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_FOLIOS_UNIDAD_OPERATIVA", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", idRazonSocial);
+            SqlDataReader reader = cmd.ExecuteReader();
+            var series = new List<FolioUnidadOperativaDTO>();
+            try
+            {
+                if (!reader.HasRows)
+                    throw new NotFoundException("No se han encontrado folios");
+                while (reader.Read())
+                {
+                    series.Add(getFolioUOFromReader(reader));
+                }
+                return series;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                reader.Close();
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
+        public void saveFolioUnidadOperativa(FolioUnidadOperativaDTO folio)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SV_FOLIO_UNIDAD_OPERATIVA", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_FOLIO", folio.idFolio);
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.idRazonSocial);
+            cmd.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", folio.idUnidadOperativa);
+            cmd.Parameters.AddWithValue("@PP_FOLIOS", folio.folios);
+            cmd.Parameters.AddWithValue("@PP_USAR_FOLIOS_COMPARTIDOS", folio.usarFoliosCompartidos);
+            cmd.Parameters.AddWithValue("@PP_MENSAJE", "").Direction = ParameterDirection.InputOutput;
+            cmd.Parameters["@PP_MENSAJE"].Size = 500;
+            try
+            {
+                cmd.ExecuteNonQuery();
+                folio.mensaje = cmd.Parameters["@PP_MENSAJE"].Value.ToString();
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Close();
+            }
+        }
+
         private Folio getFolioFromReader(SqlDataReader rdr)
         {
             Folio folio = new Folio();
             folio.id = rdr.GetInt32(0);
             folio.folios = rdr.GetInt32(1);
+            folio.foliosCompartidos = rdr.GetInt32(2);
             folio.emisor = new Emisor 
             {
                 unidadOperativa = new UnidadOperativa
                 {
                     razonSocial = new RazonSocial
                     {
-                        idRazonSocial = rdr.GetInt32(2),
-                        razonSocial = rdr.GetValue(3).ToString(),
-                        rfc = rdr.GetValue(4).ToString()
+                        idRazonSocial = rdr.GetInt32(3),
+                        razonSocial = rdr.GetValue(4).ToString(),
+                        rfc = rdr.GetValue(5).ToString()
                     }
                 }
             };
+            return folio;
+        }
+
+        private FolioUnidadOperativaDTO getFolioUOFromReader(SqlDataReader rdr)
+        {
+            var folio = new FolioUnidadOperativaDTO
+            {
+                idFolio = rdr.GetInt32(0),
+                idRazonSocial = rdr.GetInt32(1),
+                idUnidadOperativa = rdr.GetInt32(2),
+                unidadOperativa = rdr.GetString(3),
+                folios = rdr.GetInt32(4),
+                usarFoliosCompartidos = rdr.GetBoolean(5)
+            };
+
             return folio;
         }
     }

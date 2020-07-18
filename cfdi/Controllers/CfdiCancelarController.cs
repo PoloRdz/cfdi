@@ -14,21 +14,7 @@ namespace cfdi.Controllers
     [ApiController]
     public class CfdiCancelarController : ControllerBase
     {
-        // GET: api/CfdiCancelar
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
 
-        // GET: api/CfdiCancelar/5
-        //[HttpGet("{id}", Name = "Get")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-        // POST: api/CfdiCancelar
         [HttpPost]
         public IActionResult Post(CFDi cfdi)
         {
@@ -48,20 +34,8 @@ namespace cfdi.Controllers
                     return BadRequest(results);
                 }
                 results.Add("message", "Error en el servidor");
-                return BadRequest(results);
+                return StatusCode(500, results);
             }
         }
-
-        // PUT: api/CfdiCancelar/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        // DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }

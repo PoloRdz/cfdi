@@ -9,6 +9,7 @@ namespace cfdi.Models
     {
         public int id { get; set; }
         public int folios { get; set; }
+        public int foliosCompartidos { get; set; }
         public Emisor emisor { get; set; }
     }
 }

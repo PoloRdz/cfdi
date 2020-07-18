@@ -17,7 +17,8 @@ namespace cfdi.Utils
         public static void sendMail(string subject, string[] recipients, Stream xml = null, string pdf = null)
         {
             MailMessage mail = new MailMessage();
-            SmtpClient smtpClient = new SmtpClient("in.mailjet.com");//
+            SmtpClient smtpClient = new SmtpClient("localhost");//
+            //SmtpClient smtpClient = new SmtpClient("in.mailjet.com");//
             mail.From = new MailAddress("ics@tomza.com");//
             foreach(string recipient in recipients)
                 mail.To.Add(recipient);
@@ -28,7 +29,7 @@ namespace cfdi.Utils
             if (pdf != null)
                 mail.Attachments.Add(new Attachment(pdf, "application/pdf"));
             smtpClient.Port = 25;
-            smtpClient.Credentials = new NetworkCredential("839ee32ede1fd662a560afa16925c14b", "faa1df3b77854cd13a2313c8a1184ace");
+            //smtpClient.Credentials = new NetworkCredential("839ee32ede1fd662a560afa16925c14b", "faa1df3b77854cd13a2313c8a1184ace");
             try
             {
                 logger.Info("Enviando correo a: " + mail.To);

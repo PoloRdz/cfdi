@@ -23,6 +23,9 @@ namespace cfdi.Services
         public void Timbrar(CFDi cfdi)
         {
             cfdi.mPago = "PUE";
+            cfdi.moneda = "MXN";
+            cfdi.tipoVenta = "DEBITO";
+            cfdi.formaPago = "99";
             if(cfdi.emisor.serie != null && cfdi.emisor.serie != "" && cfdi.folio > 0 && cfdi.idFolio > 0)
             {
                 validateCFDI(cfdi);
@@ -59,7 +62,6 @@ namespace cfdi.Services
             ConceptosDAO conDAO = new ConceptosDAO();
             CFDiDAO cfdiDAO = new CFDiDAO();
             UsuarioDAO uDAO = new UsuarioDAO();
-            PDFbuilder PDFbuilder = new PDFbuilder();
             Calculador calc = new Calculador();
             //if (cfdi.pagos != null && cfdi.pagos.doctoRelacionados != null && cfdi.pagos.doctoRelacionados.Length > 0)
             //{
@@ -71,6 +73,18 @@ namespace cfdi.Services
             cfdi.receptor.usuario = uDAO.getUsuario(cfdi.receptor.usuario.id);
             cfdi.receptor.informacionFiscal = uDAO.getUsuarioFiscales(cfdi.receptor.usuario.id);
             cfdi.conceptos = conDAO.getConceptos(cfdi.idMov, cfdi.emisor.unidadOperativa.idUnidadOperativa);
+            //if(cfdi.conceptos[0].fecha.ToString("yyyy/MM/dd").Equals(DateTime.Now.ToString("yyyy/MM/dd")))
+            //{
+            //    throw new SameDayInvoiceException("No puedes hacer la factura el mismo día de la compra");
+            //}
+            //if(!cfdi.conceptos[0].fecha.ToString("yyyy/MM/dd").Equals(cfdi.fecha.ToString("yyyy/MM/dd")))
+            //{
+            //    throw new InvoiceDateMismatchException("La fecha que has ingresado no coincide con la fecha de la compra");
+            //}
+            //if(DateTime.Now.Subtract(cfdi.conceptos[0].fecha).TotalDays >= 15)
+            //{
+            //    throw new ExpiredInvoiceException("Solo puedes facturar hasta 15 dias después de la compra");
+            //}
             //Validar si los conceptos no han sido facturados
             calc.calcularDescuentosConceptos(cfdi.conceptos);
             calc.calcularImpuestoConceptos(cfdi.conceptos, cfdi.emisor.unidadOperativa);
@@ -87,7 +101,6 @@ namespace cfdi.Services
                 //timbrarFacturaWS(cfdi);
                 //xmlBuilder.obtenerDatosTimbre(cfdi);
                 cfdiDAO.saveCFDI(cfdi, false);
-                PDFbuilder.PDFgenerate(cfdi);
                 logger.Info("Cadena original del complemento de certificacion digital del SAT: " + cfdi.cadenaCertificadoSat);
                 sendMail(cfdi);
             }
@@ -127,12 +140,18 @@ namespace cfdi.Services
         private void sendMail(CFDi cfdi)
         {
             Stream xmlStream = StreamBuilder.getStreamFromString(cfdi.xml);
+            new PDFbuilder().PDFgenerate(cfdi);
+            string pdfPath = File.Exists("C://TOMZA.SYS/cfdi/pdf/reporte" + cfdi.serie + cfdi.folio + ".pdf") ? "C://TOMZA.SYS/cfdi/pdf/reporte" + cfdi.serie + cfdi.folio + ".pdf" : null;
+            //if (File.Exists("C://TOMZA.SYS/cfdi/pdf/reporte" + cfdi.emisor.unidadOperativa.razonSocial.rfc + ".pdf"))
+            //{
+            //    File.Delete("C://TOMZA.SYS/cfdi/pdf/reporte" + cfdi.emisor.unidadOperativa.razonSocial.rfc + ".pdf");
+            //}
             cfdi.xml = null;
             cfdi.emisor.certificado = null;
             Thread mailingThread = new Thread(
                 delegate ()
                 {
-                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.usuario.correo }, xmlStream, "C:/TOMZA.SYS/cfdi/pdf/reporte.pdf");
+                    MailSender.sendMail("Factura electrónica", new string[1] { cfdi.receptor.usuario.correo }, xmlStream, pdfPath);
                 }
             );
             mailingThread.Start();
@@ -165,7 +184,7 @@ namespace cfdi.Services
 
                 respuestaTimbre = generaCFDiService.generaCFDIAsync(user, password, xml).GetAwaiter().GetResult();
 
-                validateResponse(respuestaTimbre);
+                validarRespuesta(respuestaTimbre);
 
                 cfdi.xml = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(respuestaTimbre.documentoProcesado));
             }
@@ -176,7 +195,7 @@ namespace cfdi.Services
             }
         }
 
-        private void validateResponse(respuestaTimbrado respuesta)
+        private void validarRespuesta(respuestaTimbrado respuesta)
         {
             logger.Info(respuesta.codigoResultado + " : " + respuesta.codigoDescripcion);
             if(Operators.CompareString(respuesta.codigoResultado, null, false) == 0)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Models;
+using cfdi.Models.DTO;
 using cfdi.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,7 @@ namespace cfdi.Controllers
                     return NotFound(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 
@@ -56,7 +57,7 @@ namespace cfdi.Controllers
                     return NotFound(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 
@@ -75,7 +76,7 @@ namespace cfdi.Controllers
             catch(Exception e)
             {
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 
@@ -91,18 +92,52 @@ namespace cfdi.Controllers
                 res.Add("folio", folio);
                 return Ok(res);
             }
-            catch (Exception e)
+            catch
             {
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public string Delete(int id)
+        // POST: api/folio/unidadOperativa
+        [HttpPost("unidadOperativa")]
+        public IActionResult PostFoliosUnidadOperativa([FromBody]FolioUnidadOperativaDTO[] folios)
         {
-            return "No implementado aún";
+            var folioServ = new FolioService();
+            var res = new Dictionary<string, Object>();
+            try
+            {
+                res = folioServ.saveFolioUnidadOperativa(folios);
+                return Ok(res);
+            }
+            catch
+            {
+                res.Add("message", "Error en el servidor");
+                return StatusCode(500, res);
+            }
+        }
+
+        [HttpGet("unidadOperativa/{idRazonSocial}")]
+        public IActionResult GetFoliosUnidadOperativa(int idRazonSocial)
+        {
+            var folioServ = new FolioService();
+            var res = new Dictionary<string, Object>();
+            try
+            {
+                res.Add("foliosUnidadOperativa", folioServ.getFoliosUnidadOperativa(idRazonSocial));
+                return Ok(res);
+            }
+            catch(Exception e)
+            {
+                if (e is NotFoundException)
+                {
+                    res.Add("message", e.Message);
+                    return NotFound(res);
+                }
+                    
+                res.Add("message", "Error en el servidor");
+                return StatusCode(500, res);
+            }
         }
     }
 }

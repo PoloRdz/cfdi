@@ -35,33 +35,8 @@ namespace cfdi.Controllers
                     return NotFound(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
-        }
-
-        // GET api/<RegimenFiscalController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<RegimenFiscalController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<RegimenFiscalController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<RegimenFiscalController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

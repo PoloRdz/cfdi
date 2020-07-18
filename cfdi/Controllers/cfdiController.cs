@@ -31,7 +31,7 @@ namespace cfdi.Controllers
             catch (Exception e)
             {
                
-                if (e is InvalidRFCException)
+                if (e is InvalidRFCException || e is NotFoundException)
                 {
                     results.Add("message", e.Message);
                     return NotFound(results);
@@ -44,7 +44,9 @@ namespace cfdi.Controllers
                 if (e is InvalidCfdiDataException || e is WebServiceValidationException
                     || e is WebServiceCommunicationException || e is InvalidInvoiceTypeException
                     || e is InvoiceAtZeroException || e is PaymentGreaterThanBalanceException
-                    || e is InvalidInvoiceTypeException || e is InvoiceAtZeroException)
+                    || e is InvalidInvoiceTypeException || e is InvoiceAtZeroException
+                    || e is SameDayInvoiceException || e is InvoiceDateMismatchException
+                    || e is ExpiredInvoiceException)
                 {
                     results.Add("message", e.Message);
                     return BadRequest(results);

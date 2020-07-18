@@ -41,34 +41,9 @@ namespace cfdi.Controllers
                     return NotFound(res);
                 }
                 res.Add("message", "Error en el servidor");
-                return BadRequest(res);
+                return StatusCode(500, res);
             }
 
-        }
-
-        // GET: api/UnidadOperativa/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/UnidadOperativa
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT: api/UnidadOperativa/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }
