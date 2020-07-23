@@ -70,6 +70,50 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public List<Rol> getUsuarioRoles(int idUsuario)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_USUARIO_ROLES", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", idUsuario);
+            SqlDataReader rdr = null;
+            try
+            {
+                rdr = cmd.ExecuteReader();
+                var roles = new List<Rol>();
+                if (!rdr.HasRows)
+                    throw new NotFoundException("Este usuario no tiene ningún permiso");
+                while (rdr.Read())
+                {
+                    roles.Add(GetRolFromReader(rdr));
+                }
+                return roles;
+            }
+            catch(Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        private Rol GetRolFromReader(SqlDataReader rdr)
+        {
+            var rol = new Rol
+            {
+                id = rdr.GetInt32(0),
+                rol = rdr.GetString(1),
+                descripcion = rdr.GetString(2),
+                identificador = rdr.GetString(3)
+            };
+            return rol;
+        }
+
         public Usuario getUsuario(int id)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();

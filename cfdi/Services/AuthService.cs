@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using cfdi.Models;
 
 namespace cfdi.Services
 {
@@ -20,16 +21,20 @@ namespace cfdi.Services
             var token = "";
             var dic = new Dictionary<string, object>();
             var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Role, "Administrator"));
-            
             UsuarioDAO userDAO = new UsuarioDAO();
             usuario = userDAO.GetUsuario(user.usuario, user.password);
+            var roles = userDAO.getUsuarioRoles(usuario.id);
+            foreach (Rol rol in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, rol.identificador));
+            }
             if (!PasswordHasher.Verify(user.password, usuario.password))
                 throw new PasswordMismatchException("La contraseña es incorrecta");
             usuario.password = "*****";
             token = JWT.createToken(usuario, claims);
             dic.Add("usuario", usuario);
             dic.Add("token", token);
+            dic.Add("roles", roles);
             return dic;
         }
 

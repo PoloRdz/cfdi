@@ -13,7 +13,7 @@ namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "ADMIN, SERIE")]
     public class SerieController : ControllerBase
     {
         // GET: api/Serie

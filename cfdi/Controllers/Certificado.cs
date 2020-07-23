@@ -13,7 +13,7 @@ namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "ADMIN, CERTS")]
     public class Certificado : ControllerBase
     {
         // GET: api/<Certificado>

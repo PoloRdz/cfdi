@@ -6,6 +6,7 @@ using cfdi.Exceptions;
 using cfdi.Models;
 using cfdi.Models.DTO;
 using cfdi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,7 @@ namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "ADMIN, FOLIO")]
     public class FolioController : ControllerBase
     {
         // GET: api/Folio
