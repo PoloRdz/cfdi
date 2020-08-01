@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using cfdi.Exceptions;
+using cfdi.Models;
 using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ namespace cfdi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "ADMIN, CERTS")]
-    public class Certificado : ControllerBase
+    public class CertificadoController : ControllerBase
     {
         // GET: api/<Certificado>
         [HttpGet]
@@ -27,9 +28,9 @@ namespace cfdi.Controllers
                 res = certService.getCertificados(pagina, rpp);
                 return Ok(res);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                if(e is NotFoundException)
+                if (e is NotFoundException)
                 {
                     res.Add("message", e.Message);
                     return NotFound(res);
@@ -46,10 +47,23 @@ namespace cfdi.Controllers
             return "value";
         }
 
-        // POST api/<Certificado>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // POST api/<Certificado>/idRazonSocial
+        [HttpPost("{id}")]
+        public IActionResult Post(int id, Certificado certificado)
         {
+            var res = new Dictionary<string, Object>();
+            var certServ = new CertificadoService();
+            try
+            {
+                certServ.insertCertificado(certificado, id);
+                res.Add("certificado", certificado);
+                return Ok(res);
+            }
+            catch(Exception e)
+            {
+                res.Add("message", "Error en el servidor");
+                return StatusCode(500, res);
+            }
         }
 
         // PUT api/<Certificado>/5

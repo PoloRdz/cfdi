@@ -1,8 +1,10 @@
-﻿using cfdi.Data.DAO;
+﻿using cfdi.Models;
+using cfdi.Data.DAO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.ConstrainedExecution;
 
 namespace cfdi.Services
 {
@@ -16,5 +18,17 @@ namespace cfdi.Services
             res.Add("total", certDAO.getCertificadosTotal());
             return res;
         }
+
+        public void insertCertificado(Certificado cert, int idRazonSocial)
+        {
+            var certDAO = new CertificadoDAO();
+            int id = certDAO.InsertCertificado(cert, idRazonSocial);
+            cert.idCertificado = id;
+        }
+        //public Certificado GuardarCertificado(Certificado certificado)
+        //{
+        //    certificado.fechaExpiracion = diFirmaSAT.
+
+        //}
     }
 }

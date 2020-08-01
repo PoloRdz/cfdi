@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using cfdi.Exceptions;
+using cfdi.Models;
 using cfdi.Models.Auth;
 using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -129,6 +130,28 @@ namespace cfdi.Controllers
                 {
                     res.Add("message", e.Message);
                     return NotFound(res);
+                }
+                res.Add("message", "Error en el servidor");
+                return StatusCode(500, res);
+            }
+        }
+
+        [HttpPost("roles/{id}")]
+        public IActionResult PostRoles(int id, [FromBody]Rol[] roles)
+        {
+            var res = new Dictionary<string, Object>();
+            UsuarioService usrSrv = new UsuarioService();
+            try
+            {
+                usrSrv.GuardarRoles(id, roles);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                if (e is DuplicateUsernameException)
+                {
+                    res.Add("message", e.Message);
+                    return Conflict(res);
                 }
                 res.Add("message", "Error en el servidor");
                 return StatusCode(500, res);

@@ -71,5 +71,14 @@ namespace cfdi.Services
                 throw new DuplicateRFCException("El RFC ingresado ya existe");
             return uDAO.insertInformacionFiscal(idUsuario, infoFis);
         }
+
+        public void GuardarRoles(int idUsuario, Rol[] roles)
+        {
+            var usrDAO = new UsuarioDAO();
+            foreach(Rol rol in roles)
+            {
+                usrDAO.GuardarUsuarioRoles(idUsuario, rol);
+            }
+        }
     }
 }

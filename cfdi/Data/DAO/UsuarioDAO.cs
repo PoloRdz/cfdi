@@ -14,6 +14,28 @@ namespace cfdi.Data.DAO
     {
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
+        public void resUsuarioRoles(int idUsuario)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_RES_USUARIO_ROL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUAIRO", idUsuario);
+            try
+            {
+                cmd.ExecuteNonQuery();
+            }
+            catch(Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         public int getUsuariosCount()
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -31,6 +53,28 @@ namespace cfdi.Data.DAO
             {
                 logger.Error(e, e.Message);
                 throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public void GuardarUsuarioRoles(int idUsuario, Rol rol)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_IN_USUARIO_ROL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", idUsuario);
+            cmd.Parameters.AddWithValue("@PP_ID_ROL", rol.id);
+            try
+            {
+                int ar = cmd.ExecuteNonQuery();
+            }
+            catch(Exception e)
+            {
+                logger.Error(e, e.Message);
             }
             finally
             {
