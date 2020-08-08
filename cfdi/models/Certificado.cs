@@ -15,5 +15,6 @@ namespace cfdi.Models
         public string key { get; set; }
         public string contrasena { get; set; }
         public DateTime fechaExpiracion { get; set; }
+        public bool eliminado { get; set; }
     }
 }

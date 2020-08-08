@@ -230,6 +230,31 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public bool ActivarRazonSocial(int idRazonSocial)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_AC_RAZON_SOCIAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", idRazonSocial);
+            try
+            {
+                int id = cmd.ExecuteNonQuery();
+                if (id == 0)
+                    throw new Exception("No fue posible activar la razón social");
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         private RazonSocial getRazonSocialFromReader(SqlDataReader rdr)
         {
             var rs = new RazonSocial
@@ -247,7 +272,8 @@ namespace cfdi.Data.DAO
                 numeroInterior = rdr.GetString(10),
                 colonia = rdr.GetString(11),
                 codigoPostal = rdr.GetString(12),
-                municipio = rdr.GetString(13)
+                municipio = rdr.GetString(13),
+                eliminado = rdr.GetBoolean(14)
             };
             return rs;
         }

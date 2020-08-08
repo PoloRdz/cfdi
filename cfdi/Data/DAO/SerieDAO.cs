@@ -181,6 +181,30 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public void ActivarSerie(int id)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_AC_SERIE", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_SERIE", id);
+            try
+            {
+                int affectedRows = cmd.ExecuteNonQuery();
+                if (affectedRows == 0)
+                    throw new Exception("La serie no ha sido activada");
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         private Serie getSerieFromReader(SqlDataReader rdr)
         {
             Serie serie = new Serie();
@@ -199,6 +223,7 @@ namespace cfdi.Data.DAO
                     }
                 }
             };
+            serie.eliminado = rdr.GetBoolean(6);
             return serie;
         }
     }

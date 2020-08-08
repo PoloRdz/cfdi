@@ -34,6 +34,12 @@ namespace cfdi.Services
             return FirmaSAT.Sat.GetCertNumber(certPathName + certName);
         }
 
+        public DateTime GetCertificateExpiryDate()
+        {
+            var date = FirmaSAT.Sat.GetCertExpiry(certPathName + certName);
+            return DateTime.Parse(date);
+        }
+
         public void ValidateCertAndKey() 
         {
             int validation = FirmaSAT.Sat.CheckKeyAndCert(certPathName + certKey, privateKey, certPathName + certName);

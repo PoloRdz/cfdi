@@ -13,10 +13,10 @@ namespace cfdi.Data.DAO
     {
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public List<RegimenFiscal> getRegimenesFiscales()
+        public List<RegimenFiscal> getRegimenesFiscalesLista()
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_SK_REGIMENES_FISCALES", cnn);
+            SqlCommand cmd = new SqlCommand("PG_SK_REGIMENES_FISCALES_LISTA", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_L_DEBUG", 0);
             cmd.Parameters.AddWithValue("@PP_K_SISTEMA_EXE", 1);
@@ -44,6 +44,192 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public List<RegimenFiscal> ObtenerRegimenesFiscales(int pagina, int rpp)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_REGIMENES_FISCALES", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_NUM_PAGINA", pagina);
+            cmd.Parameters.AddWithValue("@PP_RPP", rpp);
+            SqlDataReader rdr = null;
+            List<RegimenFiscal> regimenesFiscales = null;
+            try
+            {
+                rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                {
+                    regimenesFiscales = new List<RegimenFiscal>();
+                    while (rdr.Read())
+                        regimenesFiscales.Add(GetRegimenFiscalFromReader(rdr));
+                }
+                return regimenesFiscales;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public RegimenFiscal ObtenerRegimenFiscal(int idRegimenFiscal)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_REGIMEN_FISCAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_REGIMEN_FISCAL", idRegimenFiscal);
+            RegimenFiscal regimenFiscal = null;
+            SqlDataReader rdr = null;
+            try
+            {
+                rdr = cmd.ExecuteReader();
+                if (rdr.HasRows)
+                    regimenFiscal = GetRegimenFiscalFromReader(rdr);
+                return regimenFiscal;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                rdr.Close();
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int ObtenerRegimenesFiscalesTotal()
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_SK_REGIMENES_FISCALES_TOTAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            int total;
+            try
+            {
+                total = cmd.ExecuteNonQuery();
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int InsertarRegimenFiscal(RegimenFiscal regimenFiscal)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_IN_REGIMEN_FISCAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_REGIMEN_FISCAL", regimenFiscal.idRegimenFiscal);
+            cmd.Parameters.AddWithValue("@PP_DESCRIPCRION", regimenFiscal.descripcion);
+            cmd.Parameters.AddWithValue("@PP_FISICA", regimenFiscal.personaFisica);
+            cmd.Parameters.AddWithValue("@PP_MORAL", regimenFiscal.personaMoral);
+            int total;
+            try
+            {
+                total = cmd.ExecuteNonQuery();
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int ActualizarRegimenFiscal(RegimenFiscal regimenFiscal)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_UP_REGIMEN_FISCAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_REGIMEN_FISCAL", regimenFiscal.idRegimenFiscal);
+            cmd.Parameters.AddWithValue("@PP_DESCRIPCRION", regimenFiscal.descripcion);
+            cmd.Parameters.AddWithValue("@PP_FISICA", regimenFiscal.personaFisica);
+            cmd.Parameters.AddWithValue("@PP_MORAL", regimenFiscal.personaMoral);
+            int total;
+            try
+            {
+                total = cmd.ExecuteNonQuery();
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int EliminarRegimenFiscal(int idRegimenFiscal)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_DL_REGIMEN_FISCAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_REGIMEN_FISCAL", idRegimenFiscal);
+            int total;
+            try
+            {
+                total = cmd.ExecuteNonQuery();
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int ActivarRegimenFiscal(int idRegimenFiscal)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_AC_REGIMEN_FISCAL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_REGIMEN_FISCAL", idRegimenFiscal);
+            int total;
+            try
+            {
+                total = cmd.ExecuteNonQuery();
+                return total;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         private RegimenFiscal GetRegimenFiscalFromReader(SqlDataReader rdr)
         {
             var rf = new RegimenFiscal
@@ -51,7 +237,8 @@ namespace cfdi.Data.DAO
                 idRegimenFiscal = rdr.GetInt32(0),
                 descripcion = rdr.GetString(1),
                 personaFisica = rdr.GetBoolean(2),
-                personaMoral = rdr.GetBoolean(3)
+                personaMoral = rdr.GetBoolean(3),
+                eliminado = rdr.GetBoolean(4)
             };
             return rf;
         }

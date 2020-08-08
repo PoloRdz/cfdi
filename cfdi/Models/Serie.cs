@@ -11,5 +11,6 @@ namespace cfdi.Models
         public string tipoVenta { get; set; }
         public string serie { get; set; }
         public Emisor emisor { get; set; }
+        public bool eliminado { get; set; }
     }
 }

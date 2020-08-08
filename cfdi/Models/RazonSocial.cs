@@ -22,5 +22,6 @@ namespace cfdi.Models
         public string codigoPostal { get; set; }
         public string municipio { get; set; }
         public RegimenFiscal regimenFiscal { get; set; }
+        public bool eliminado { get; set; }
     }
 }

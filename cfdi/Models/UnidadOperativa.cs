@@ -22,5 +22,7 @@ namespace cfdi.Models
         public double impAplicables { get; set; }
         public Zona zona { get; set; }
         public RazonSocial razonSocial { get; set; }
+        public Servidor servidor { get; set; }
+        public bool eliminado { get; set; }
     }
 }

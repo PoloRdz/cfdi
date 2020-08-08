@@ -45,5 +45,11 @@ namespace cfdi.Services
             SerieDAO serDAO = new SerieDAO();
             serDAO.deleteSerie(id);
         }
+
+        public void ActivarSerie(int id)
+        {
+            SerieDAO serDAO = new SerieDAO();
+            serDAO.ActivarSerie(id);
+        }
     }
 }

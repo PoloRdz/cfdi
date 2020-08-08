@@ -11,5 +11,6 @@ namespace cfdi.Models
         public string descripcion { get; set; }
         public bool personaFisica { get; set; }
         public bool personaMoral { get; set; }
+        public bool eliminado { get; set; }
     }
 }

@@ -5,16 +5,18 @@ using System.Threading.Tasks;
 using cfdi.Exceptions;
 using cfdi.Models;
 using cfdi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace cfdi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsoCFDiController : ControllerBase
     {
         // GET: api/<UsoCFDiController>
-        [HttpGet]
+        [HttpGet("lista")]
         public IActionResult Get()
         {
             UsoCFDiService ser = new UsoCFDiService();
@@ -37,29 +39,114 @@ namespace cfdi.Controllers
             
         }
 
-        // GET api/<UsoCFDiController>/5
+        [HttpGet()]
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult Get(int pagina, int rpp)
+        {
+            UsoCFDiService usoCFDIService = new UsoCFDiService();
+            var res = new Dictionary<string, Object>();
+            try
+            {
+                res = usoCFDIService.ObtenerUsoCFDis(pagina, rpp);
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                if (e is NotFoundException)
+                {
+                    return NotFound(new { Message = e.Message });
+                }
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
+        }
+
         [HttpGet("{id}")]
-        public string Get(int id)
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult Get(string id)
         {
-            return "value";
+            UsoCFDiService usoCFDIService = new UsoCFDiService();
+            var res = new Dictionary<string, Object>();
+            try
+            {
+                res.Add("unidadOperativa", usoCFDIService.ObtenerUsoCFDi(id));
+                return Ok(res);
+            }
+            catch (Exception e)
+            {
+                if (e is NotFoundException)
+                {
+                    return NotFound(new { Message = e.Message });
+                }
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
         }
 
-        // POST api/<UsoCFDiController>
+        // POST: api/Zona
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult Post(UnidadOperativa unidadOperativa)
         {
+            UnidadOperativaService zser = new UnidadOperativaService();
+            try
+            {
+                zser.InsertarUnidadOperativa(unidadOperativa);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
         }
 
-        // PUT api/<UsoCFDiController>/5
+        // PUT: api/Zona/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult Put(int id, UnidadOperativa unidadOperativa)
         {
+            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            try
+            {
+                unidadOperativaService.ActualizarUnidadOperativa(unidadOperativa);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
         }
 
-        // DELETE api/<UsoCFDiController>/5
+        // DELETE: api/Zona/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult Delete(int id)
         {
+            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            try
+            {
+                unidadOperativaService.EliminarUnidadOperativa(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
+        }
+
+        // Put: api/Zona/activar/5
+        [HttpPut("activar/{id}")]
+        [Authorize(Roles = "ADMIN, UCFDI")]
+        public IActionResult PutActivar(int id)
+        {
+            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            try
+            {
+                unidadOperativaService.ActivarUnidadOperativa(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, new { Message = "Error en el servidor" });
+            }
         }
     }
 }

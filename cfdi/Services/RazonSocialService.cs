@@ -48,5 +48,11 @@ namespace cfdi.Services
             var rsDAO = new RazonSocialDAO();
             rsDAO.DeleteRazonSocial(idRazonSocial);
         }
+
+        public void ActivarRazonSocial(int idRazonSocial)
+        {
+            var rsDAO = new RazonSocialDAO();
+            rsDAO.ActivarRazonSocial(idRazonSocial);
+        }
     }
 }

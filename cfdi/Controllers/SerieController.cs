@@ -8,6 +8,7 @@ using cfdi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
 
 namespace cfdi.Controllers
 {
@@ -99,6 +100,22 @@ namespace cfdi.Controllers
             {
                 res.Add("message", "Error en el servidor");
                 return BadRequest(res);
+            }
+        }
+
+        [HttpPut("activar/{id}")]
+        public IActionResult PutActivarSerie(int id)
+        {
+            var res = new Dictionary<string, Object>();
+            SerieService serSrv = new SerieService();
+            try
+            {
+                serSrv.ActivarSerie(id);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {Message = "Error en el servidor" });
             }
         }
 

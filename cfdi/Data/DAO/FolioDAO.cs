@@ -109,6 +109,7 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_ID_FOLIO", 0).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", folio.emisor.unidadOperativa.razonSocial.idRazonSocial);
             cmd.Parameters.AddWithValue("@PP_FOLIOS", folio.folios);
+            cmd.Parameters.AddWithValue("@PP_FOLIOS_COMPARTIDOS", folio.foliosCompartidos);
             try
             {
                 cmd.ExecuteNonQuery();

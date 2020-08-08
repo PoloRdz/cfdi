@@ -85,6 +85,8 @@ namespace cfdi.Data.DAO
             try
             {
                 rdr = cmd.ExecuteReader();
+                if (!rdr.HasRows)
+                    throw new NotFoundException("No se ha encontrado el certificado");
                 rdr.Read();
                 return getCertificadoFromReader(rdr);
             }
@@ -139,9 +141,17 @@ namespace cfdi.Data.DAO
         public bool UpdateCertificado(Certificado cert)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_IN_CERTIFICADO", cnn);
+            SqlCommand cmd = new SqlCommand("PG_UP_CERTIFICADO", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@PP_K_CERTIFICADO", 0).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_ID_CERTIFICADO", cert.idCertificado);
+            cmd.Parameters.AddWithValue("@PP_D_CERTIFICADO", cert.descripcion);
+            cmd.Parameters.AddWithValue("@PP_C_CERTIFICADO", cert.identificador);
+            cmd.Parameters.AddWithValue("@PP_CERTIFICADO", cert.cert);
+            cmd.Parameters.AddWithValue("@PP_RUTA_CERTIFICADO", cert.rutaCert);
+            cmd.Parameters.AddWithValue("@PP_LLAVE", cert.key);
+            cmd.Parameters.AddWithValue("@PP_CONTRASENA", cert.contrasena);
+            cmd.Parameters.AddWithValue("@PP_LOGO", "logo_" + cert.cert);
+            cmd.Parameters.AddWithValue("@PP_FECHA_EXPIRACION", cert.fechaExpiracion);
             try
             {
                 int id = cmd.ExecuteNonQuery();
@@ -164,14 +174,39 @@ namespace cfdi.Data.DAO
         public bool RemoveCertificado(int idCertificado)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_IN_CERTIFICADO", cnn);
+            SqlCommand cmd = new SqlCommand("PG_DL_CERTIFICADO", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@PP_K_CERTIFICADO", 0).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_ID_CERTIFICADO", idCertificado);
             try
             {
                 int id = cmd.ExecuteNonQuery();
                 if (id == 0)
                     throw new Exception("No fue posible remover el certificado");
+                return true;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public bool ActivarCertificado(int idCertificado)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_AC_CERTIFICADO", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_CERTIFICADO", idCertificado);
+            try
+            {
+                int id = cmd.ExecuteNonQuery();
+                if (id == 0)
+                    throw new Exception("No fue posible activar el certificado");
                 return true;
             }
             catch (Exception e)
@@ -197,7 +232,8 @@ namespace cfdi.Data.DAO
                 rutaCert = rdr.GetString(4),
                 key = rdr.GetString(5),
                 contrasena = rdr.GetString(6),
-                fechaExpiracion = rdr.GetDateTime(7)
+                fechaExpiracion = rdr.GetDateTime(7),
+                eliminado = rdr.GetBoolean(8)
             };
             return cert;
         }

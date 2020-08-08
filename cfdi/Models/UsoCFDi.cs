@@ -13,5 +13,6 @@ namespace cfdi.Models
         public string explicacion { get; set; }
         public bool fisica { get; set; }
         public bool moral { get; set; }
+        public bool eliminado { get; set; }
     }
 }
