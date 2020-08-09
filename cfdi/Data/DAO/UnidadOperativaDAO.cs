@@ -82,7 +82,7 @@ namespace cfdi.Data.DAO
         public UnidadOperativa ObtenerUnidadOperativa(int idUnidadOperativa)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_SK_UNIDAD_OPERATIVA", cnn);
+            SqlCommand cmd = new SqlCommand("PG_SK_UNIDAD_OPERATIVA_V2", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_UNIDAD_OPERATIVA", idUnidadOperativa);
             SqlDataReader reader = null;
@@ -116,7 +116,7 @@ namespace cfdi.Data.DAO
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
             SqlCommand cmd = new SqlCommand("PG_IN_UNIDAD_OPERATIVA_V2", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@PP_ID_UNIDAD_OPERATIVA", 0).Direction = ParameterDirection.InputOutput;
+            cmd.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", 0).Direction = ParameterDirection.InputOutput;
             cmd.Parameters.AddWithValue("@PP_UNIDAD_OPERATIVA_NOMBRE", unidadOperativa.unidadOperativa);
             cmd.Parameters.AddWithValue("@PP_DESCRIPCTION", unidadOperativa.descripcion);
             cmd.Parameters.AddWithValue("@PP_IDENTIFICADOR", unidadOperativa.identificador);
@@ -130,13 +130,13 @@ namespace cfdi.Data.DAO
             cmd.Parameters.AddWithValue("@PP_MUNICIPIO", unidadOperativa.municipio);
             cmd.Parameters.AddWithValue("@PP_K_ZONA", unidadOperativa.zona.idZona);
             cmd.Parameters.AddWithValue("@PP_K_RAZON_SOCIAL", unidadOperativa.razonSocial.idRazonSocial);
-            cmd.Parameters.AddWithValue("@PP_K_SERVIDOR", unidadOperativa.servidor.idServidor);
+            cmd.Parameters.AddWithValue("@PP_K_SERVIDOR", 1);
             int resultado;
             try
             {
                 resultado = cmd.ExecuteNonQuery();
                 if (resultado > 0)
-                    unidadOperativa.idUnidadOperativa = int.Parse(cmd.Parameters["@PP_ID_UNIDAD_OPERATIVA"].Value.ToString());
+                    unidadOperativa.idUnidadOperativa = int.Parse(cmd.Parameters["@PP_K_UNIDAD_OPERATIVA"].Value.ToString());
                 return resultado;
             }
             catch (Exception e)
@@ -260,6 +260,9 @@ namespace cfdi.Data.DAO
             uo.servidor = new Servidor();
             uo.servidor.idServidor = rdr.GetInt32(16);
             uo.servidor.servidor = rdr.GetString(17);
+            uo.zona = new Zona();
+            uo.zona.idZona = rdr.GetInt32(18);
+            uo.zona.zona = rdr.GetString(19);
             return uo;
         }
     }
