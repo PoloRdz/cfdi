@@ -14,6 +14,7 @@ namespace cfdi.Models.Auth
         public string apellidoP { get; set; }
         public string apellidoM { get; set; }
         public string correo { get; set; }
+        public bool eliminado { get; set; }
 
     }
 }

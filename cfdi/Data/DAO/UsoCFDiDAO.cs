@@ -79,9 +79,12 @@ namespace cfdi.Data.DAO
             SqlCommand cmd = new SqlCommand("PG_SK_USO_CFDIS_TOTAL", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             int total;
+            SqlDataReader rdr = null;
             try
             {
-                total = cmd.ExecuteNonQuery();
+                rdr = cmd.ExecuteReader();
+                rdr.Read();
+                total = rdr.GetInt32(0);
                 return total;
             }
             catch (Exception e)
@@ -91,6 +94,7 @@ namespace cfdi.Data.DAO
             }
             finally
             {
+                rdr.Close();
                 cmd.Dispose();
                 cnn.Dispose();
             }

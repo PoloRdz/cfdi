@@ -72,10 +72,10 @@ namespace cfdi.Controllers
         [Authorize(Roles = "ADMIN, UOP")]
         public IActionResult Post(UnidadOperativa unidadOperativa)
         {
-            UnidadOperativaService zser = new UnidadOperativaService();
+            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
             try
             {
-                zser.InsertarUnidadOperativa(unidadOperativa);
+                unidadOperativaService.InsertarUnidadOperativa(unidadOperativa);
                 return Ok();
             }
             catch (Exception e)

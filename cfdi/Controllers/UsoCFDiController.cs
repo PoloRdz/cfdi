@@ -68,7 +68,7 @@ namespace cfdi.Controllers
             var res = new Dictionary<string, Object>();
             try
             {
-                res.Add("unidadOperativa", usoCFDIService.ObtenerUsoCFDi(id));
+                res.Add("usoCFDi", usoCFDIService.ObtenerUsoCFDi(id));
                 return Ok(res);
             }
             catch (Exception e)
@@ -84,12 +84,12 @@ namespace cfdi.Controllers
         // POST: api/Zona
         [HttpPost]
         [Authorize(Roles = "ADMIN, UCFDI")]
-        public IActionResult Post(UnidadOperativa unidadOperativa)
+        public IActionResult Post(UsoCFDi usoCFDi)
         {
-            UnidadOperativaService zser = new UnidadOperativaService();
+            UsoCFDiService usoCFDIService = new UsoCFDiService();
             try
             {
-                zser.InsertarUnidadOperativa(unidadOperativa);
+                usoCFDIService.InsertarUsoCFDi(usoCFDi);
                 return Ok();
             }
             catch (Exception e)
@@ -101,12 +101,12 @@ namespace cfdi.Controllers
         // PUT: api/Zona/5
         [HttpPut("{id}")]
         [Authorize(Roles = "ADMIN, UCFDI")]
-        public IActionResult Put(int id, UnidadOperativa unidadOperativa)
+        public IActionResult Put(string id, UsoCFDi usoCFDi)
         {
-            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            UsoCFDiService usoCFDIService = new UsoCFDiService();
             try
             {
-                unidadOperativaService.ActualizarUnidadOperativa(unidadOperativa);
+                usoCFDIService.ActualizarUsoCFDi(usoCFDi);
                 return Ok();
             }
             catch (Exception e)
@@ -118,12 +118,12 @@ namespace cfdi.Controllers
         // DELETE: api/Zona/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "ADMIN, UCFDI")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string id)
         {
-            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            UsoCFDiService usoCFDIService = new UsoCFDiService(); 
             try
             {
-                unidadOperativaService.EliminarUnidadOperativa(id);
+                usoCFDIService.EliminarUsoCFDi(id);
                 return Ok();
             }
             catch (Exception e)
@@ -135,12 +135,12 @@ namespace cfdi.Controllers
         // Put: api/Zona/activar/5
         [HttpPut("activar/{id}")]
         [Authorize(Roles = "ADMIN, UCFDI")]
-        public IActionResult PutActivar(int id)
+        public IActionResult PutActivar(string id)
         {
-            UnidadOperativaService unidadOperativaService = new UnidadOperativaService();
+            UsoCFDiService usoCFDIService = new UsoCFDiService();
             try
             {
-                unidadOperativaService.ActivarUnidadOperativa(id);
+                usoCFDIService.ActivarUsoCFDi(id);
                 return Ok();
             }
             catch (Exception e)

@@ -89,7 +89,10 @@ namespace cfdi.Data.DAO
             {
                 rdr = cmd.ExecuteReader();
                 if (rdr.HasRows)
+                {
+                    rdr.Read();
                     regimenFiscal = GetRegimenFiscalFromReader(rdr);
+                }
                 return regimenFiscal;
             }
             catch (Exception e)
@@ -232,14 +235,12 @@ namespace cfdi.Data.DAO
 
         private RegimenFiscal GetRegimenFiscalFromReader(SqlDataReader rdr)
         {
-            var rf = new RegimenFiscal
-            {
-                idRegimenFiscal = rdr.GetInt32(0),
-                descripcion = rdr.GetString(1),
-                personaFisica = rdr.GetBoolean(2),
-                personaMoral = rdr.GetBoolean(3),
-                eliminado = rdr.GetBoolean(4)
-            };
+            var rf = new RegimenFiscal();
+            rf.idRegimenFiscal = rdr.GetInt32(0);
+            rf.descripcion = rdr.GetString(1);
+            rf.personaFisica = rdr.GetBoolean(2);
+            rf.personaMoral = rdr.GetBoolean(3);
+            rf.eliminado = rdr.GetBoolean(4);
             return rf;
         }
     }

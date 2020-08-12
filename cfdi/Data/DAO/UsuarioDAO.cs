@@ -83,6 +83,30 @@ namespace cfdi.Data.DAO
             }
         }
 
+        public int EliminarUsuarioRoles(int idUsuario)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_RS_USUARIO_ROL", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", idUsuario);
+            int resultado = 0;
+            try
+            {
+                resultado = cmd.ExecuteNonQuery();
+                return resultado;
+            }
+            catch(Exception e)
+            {
+                logger.Error(e);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
         public List<Usuario> getUsuarios(int page, int rpp)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
@@ -125,12 +149,13 @@ namespace cfdi.Data.DAO
             {
                 rdr = cmd.ExecuteReader();
                 var roles = new List<Rol>();
-                if (!rdr.HasRows)
-                    throw new NotFoundException("Este usuario no tiene ningún permiso");
-                while (rdr.Read())
+                if (rdr.HasRows)
                 {
-                    roles.Add(GetRolFromReader(rdr));
-                }
+                    while (rdr.Read())
+                    {
+                        roles.Add(GetRolFromReader(rdr));
+                    }
+                }                
                 return roles;
             }
             catch(Exception e)
@@ -398,7 +423,7 @@ namespace cfdi.Data.DAO
         public void deleteUsuario(int id)
         {
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
-            SqlCommand cmd = new SqlCommand("PG_DL_USUARIO", cnn);
+            SqlCommand cmd = new SqlCommand("PG_DL_USUARIO_V2", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@PP_ID_USUARIO", id);
             try
@@ -406,6 +431,30 @@ namespace cfdi.Data.DAO
                 int affectedRows = cmd.ExecuteNonQuery();
                 if (affectedRows == 0)
                     throw new Exception("El usuario no ha sido eliminado");
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, e.Message);
+                throw e;
+            }
+            finally
+            {
+                cmd.Dispose();
+                cnn.Dispose();
+            }
+        }
+
+        public int ActivarUsuario(int id)
+        {
+            SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
+            SqlCommand cmd = new SqlCommand("PG_AC_USUARIO", cnn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@PP_ID_USUARIO", id);
+            int resultado;
+            try
+            {
+                resultado = cmd.ExecuteNonQuery();
+                return resultado;
             }
             catch (Exception e)
             {
@@ -488,6 +537,7 @@ namespace cfdi.Data.DAO
             usuario.apellidoP = reader.GetString(4);
             usuario.apellidoM = reader.GetString(5);
             usuario.correo = reader.GetString(6);
+            usuario.eliminado = reader.GetBoolean(7);
             return usuario;
         }
 

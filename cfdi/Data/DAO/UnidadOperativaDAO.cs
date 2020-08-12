@@ -156,7 +156,7 @@ namespace cfdi.Data.DAO
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
             SqlCommand cmd = new SqlCommand("PG_UP_UNIDAD_OPERATIVA_V2", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@PP_ID_UNIDAD_OPERATIVA", unidadOperativa.idUnidadOperativa);
+            cmd.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", unidadOperativa.idUnidadOperativa);
             cmd.Parameters.AddWithValue("@PP_UNIDAD_OPERATIVA_NOMBRE", unidadOperativa.unidadOperativa);
             cmd.Parameters.AddWithValue("@PP_DESCRIPCTION", unidadOperativa.descripcion);
             cmd.Parameters.AddWithValue("@PP_IDENTIFICADOR", unidadOperativa.identificador);
@@ -218,7 +218,7 @@ namespace cfdi.Data.DAO
             SqlConnection cnn = DBConnectionFactory.GetOpenConnection();
             SqlCommand cmd = new SqlCommand("PG_AC_UNIDAD_OPERATIVA", cnn);
             cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@PP_ID_UNIDAD_OPERATIVA", idUnidadOperativa);
+            cmd.Parameters.AddWithValue("@PP_K_UNIDAD_OPERATIVA", idUnidadOperativa);
             int resultado;
             try
             {
